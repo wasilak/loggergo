@@ -1,4 +1,4 @@
-module github.com/wasilak/logger
+module github.com/wasilak/loggergo
 
 go 1.20
 
