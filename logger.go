@@ -8,26 +8,26 @@ import (
 	"golang.org/x/exp/slog"
 )
 
-// The function initializes a logger with a specified log level and format, allowing the user to choose
-// between logging in JSON or text format.
+// The `LoggerInit` function initializes a logger with a specified log level and log format, allowing
+// the user to choose between JSON or text format.
 func LoggerInit(level string, logFormat string) {
 
-	// This code block is setting the log level based on the `level` parameter passed to the `LoggerInit`
-	// function. It converts the `level` parameter to uppercase using `strings.ToUpper` and then sets the
-	// `logLevel` variable to the corresponding `slog.Leveler` value based on the string value of `level`.
-	// If `level` is not one of the recognized values ("INFO", "ERROR", "WARN", "DEBUG"), it sets the log
-	// level to `slog.LevelInfo` by default. The `logLevel` variable is then used to set the log level in
-	// the `opts` variable, which is used to configure the logger handler.
+	// The code block is assigning a value to the `logLevel` variable based on the value of the `level`
+	// parameter passed to the `LoggerInit` function. It uses a switch statement to check the lowercase
+	// value of `level` and assigns the corresponding `slog.Level` value to `logLevel`. If the value of
+	// `level` is "info", it assigns `slog.LevelInfo` to `logLevel`. If the value is "error", it assigns
+	// `slog.LevelError`, and so on. If the value of `level` does not match any of the cases, it assigns
+	// `slog.LevelInfo` as the default value for `logLevel`.
 	var logLevel slog.Leveler
 
-	switch strings.ToUpper(level) {
-	case "INFO":
+	switch strings.ToLower(level) {
+	case "info":
 		logLevel = slog.LevelInfo
-	case "ERROR":
+	case "error":
 		logLevel = slog.LevelError
-	case "WARN":
+	case "warn":
 		logLevel = slog.LevelWarn
-	case "DEBUG":
+	case "debug":
 		logLevel = slog.LevelDebug
 	default:
 		logLevel = slog.LevelInfo
@@ -38,11 +38,13 @@ func LoggerInit(level string, logFormat string) {
 		AddSource: true,
 	}
 
-	// This code block is checking if the `logFormat` parameter passed to the `LoggerInit` function is
-	// equal to the string "json" in lowercase. If it is, it creates a new logger with a JSON handler and
-	// sets it as the default logger using `slog.SetDefault`. If it is not equal to "json", it creates a
-	// new logger with a text handler and sets it as the default logger. This allows the user to choose
-	// between logging in JSON format or text format.
+	// The code block is checking the value of the `logFormat` parameter passed to the `LoggerInit`
+	// function. If the lowercase value of `logFormat` is equal to "json", it sets the default logger to a
+	// new logger with a JSON log format. It does this by calling `slog.NewJSONHandler` with `os.Stderr`
+	// as the output destination and `&opts` as the options. The resulting handler is then passed to
+	// `otelgoslog.NewTracingHandler`, which adds tracing functionality to the logger. Finally, the
+	// resulting tracing handler is passed to `slog.New`, which creates a new logger with the specified
+	// handler, and `slog.SetDefault` is called to set this logger as the default logger.
 	if strings.ToLower(logFormat) == "json" {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
