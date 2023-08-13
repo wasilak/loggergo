@@ -11,7 +11,7 @@ import (
 
 // The `LoggerInit` function initializes a logger with a specified log level and log format, allowing
 // the user to choose between JSON or text format.
-func LoggerInit(level string, logFormat string, additionalArgs ...any) {
+func LoggerInit(level string, logFormat string, additionalAttrs ...any) {
 
 	// The code block is assigning a value to the `logLevel` variable based on the value of the `level`
 	// parameter passed to the `LoggerInit` function. It uses a switch statement to check the lowercase
@@ -52,5 +52,5 @@ func LoggerInit(level string, logFormat string, additionalArgs ...any) {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
 	}
 
-	slog.SetDefault(slog.Default().With(additionalArgs))
+	slog.SetDefault(slog.Default().With("additionalAttrs", additionalAttrs))
 }
