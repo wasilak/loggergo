@@ -52,5 +52,7 @@ func LoggerInit(level string, logFormat string, additionalAttrs ...any) {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
 	}
 
-	slog.SetDefault(slog.Default().With("additionalAttrs", additionalAttrs))
+	for _, v := range additionalAttrs {
+		slog.SetDefault(slog.Default().With(v))
+	}
 }
