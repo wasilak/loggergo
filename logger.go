@@ -52,7 +52,5 @@ func LoggerInit(level string, logFormat string, additionalArgs ...any) {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
 	}
 
-	if additionalArgs != nil {
-		slog.Default().With(additionalArgs)
-	}
+	slog.SetDefault(slog.Default().With(additionalArgs))
 }
