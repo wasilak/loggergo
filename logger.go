@@ -39,10 +39,6 @@ func LoggerInit(level string, logFormat string, additionalArgs ...any) {
 		AddSource: true,
 	}
 
-	if additionalArgs != nil {
-		slog.Default().With(additionalArgs)
-	}
-
 	// The code block is checking the value of the `logFormat` parameter passed to the `LoggerInit`
 	// function. If the lowercase value of `logFormat` is equal to "json", it sets the default logger to a
 	// new logger with a JSON log format. It does this by calling `slog.NewJSONHandler` with `os.Stderr`
@@ -54,5 +50,9 @@ func LoggerInit(level string, logFormat string, additionalArgs ...any) {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
+	}
+
+	if additionalArgs != nil {
+		slog.Default().With(additionalArgs)
 	}
 }
