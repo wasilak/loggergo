@@ -11,7 +11,7 @@ import (
 
 // The `LoggerInit` function initializes a logger with a specified log level and log format, allowing
 // the user to choose between JSON or text format.
-func LoggerInit(level string, logFormat string) {
+func LoggerInit(level string, logFormat string, additionalArgs any) {
 
 	// The code block is assigning a value to the `logLevel` variable based on the value of the `level`
 	// parameter passed to the `LoggerInit` function. It uses a switch statement to check the lowercase
@@ -37,6 +37,10 @@ func LoggerInit(level string, logFormat string) {
 	opts := slog.HandlerOptions{
 		Level:     logLevel,
 		AddSource: true,
+	}
+
+	if additionalArgs != nil {
+		slog.Default().With(additionalArgs)
 	}
 
 	// The code block is checking the value of the `logFormat` parameter passed to the `LoggerInit`
