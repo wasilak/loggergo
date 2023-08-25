@@ -7,11 +7,13 @@ import (
 	"log/slog"
 
 	otelgoslog "github.com/wasilak/otelgo/slog"
+
+	"github.com/golang-cz/devslog"
 )
 
 // The `LoggerInit` function initializes a logger with a specified log level and log format, allowing
 // the user to choose between JSON or text format.
-func LoggerInit(level string, logFormat string, additionalAttrs ...any) {
+func LoggerInit(level string, logFormat string, dev bool, additionalAttrs ...any) *slog.Logger {
 
 	// The code block is assigning a value to the `logLevel` variable based on the value of the `level`
 	// parameter passed to the `LoggerInit` function. It uses a switch statement to check the lowercase
@@ -49,10 +51,21 @@ func LoggerInit(level string, logFormat string, additionalAttrs ...any) {
 	if strings.ToLower(logFormat) == "json" {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
-		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
+		if dev {
+			devOpts := &devslog.Options{
+				HandlerOptions:    &opts,
+				MaxSlicePrintSize: 10,
+				SortKeys:          true,
+			}
+			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, devOpts))))
+		} else {
+			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
+		}
 	}
 
 	for _, v := range additionalAttrs {
 		slog.SetDefault(slog.Default().With(v))
 	}
+
+	return slog.Default()
 }
