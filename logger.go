@@ -50,9 +50,9 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) *slog.Logger {
 
 	var logLevel slog.Leveler
 
-	// The `switch` statement is used to evaluate the value of `config.Level` and assign a corresponding
+	// The `switch` statement is used to evaluate the value of `defaultConfig.Level` and assign a corresponding
 	// `slog.Level` value to the `logLevel` variable.
-	switch strings.ToLower(config.Level) {
+	switch strings.ToLower(defaultConfig.Level) {
 	case "info":
 		logLevel = slog.LevelInfo
 	case "error":
@@ -70,13 +70,13 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) *slog.Logger {
 		AddSource: true,
 	}
 
-	// The `if` statement is checking if the value of `config.Format` is equal to "json". If it is, it
+	// The `if` statement is checking if the value of `defaultConfig.Format` is equal to "json". If it is, it
 	// sets the default logger handler to a new `slog.NewJSONHandler` with the provided options. This
 	// means that log messages will be formatted as JSON when written to the log output.
-	if strings.ToLower(config.Format) == "json" {
+	if strings.ToLower(defaultConfig.Format) == "json" {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
-		if config.Dev {
+		if defaultConfig.Dev {
 			devOpts := &devslog.Options{
 				HandlerOptions:    &opts,
 				MaxSlicePrintSize: 10,
