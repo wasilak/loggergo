@@ -30,21 +30,21 @@ type LoggerGoConfig struct {
 	Dev    bool   `json:"dev"`
 }
 
-// The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
-// initializing a variable named `defaultConfig` with a default configuration for the logger. It sets
-// the `Level` property to "info", indicating that the logger should record log messages with a
-// severity level of "info" or higher. The `Format` property is set to "plain", specifying that the log
-// messages should be formatted in a plain text format. The `Dev` property is set to `false`,
-// indicating that the logger is not running in development mode.
-var defaultConfig = LoggerGoConfig{
-	Level:  "info",
-	Format: "plain",
-	Dev:    false,
-}
-
 // The LoggerInit function initializes a logger with the provided configuration and additional
 // attributes.
 func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) *slog.Logger {
+
+	// The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
+	// initializing a variable named `defaultConfig` with a default configuration for the logger. It sets
+	// the `Level` property to "info", indicating that the logger should record log messages with a
+	// severity level of "info" or higher. The `Format` property is set to "plain", specifying that the log
+	// messages should be formatted in a plain text format. The `Dev` property is set to `false`,
+	// indicating that the logger is not running in development mode.
+	defaultConfig := LoggerGoConfig{
+		Level:  "info",
+		Format: "plain",
+		Dev:    false,
+	}
 
 	mergo.Merge(&defaultConfig, config)
 
