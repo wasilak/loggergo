@@ -9,21 +9,29 @@ import (
 	otelgoslog "github.com/wasilak/otelgo/slog"
 
 	"github.com/golang-cz/devslog"
+
+	"dario.cat/mergo"
 )
 
-// The `LoggerInit` function initializes a logger with a specified log level and log format, allowing
-// the user to choose between JSON or text format.
-func LoggerInit(level string, logFormat string, dev bool, additionalAttrs ...any) *slog.Logger {
+type LoggerGoConfig struct {
+	Level  string `json:"level"`
+	Format string `json:"format"`
+	Dev    bool   `json:"dev"`
+}
 
-	// The code block is assigning a value to the `logLevel` variable based on the value of the `level`
-	// parameter passed to the `LoggerInit` function. It uses a switch statement to check the lowercase
-	// value of `level` and assigns the corresponding `slog.Level` value to `logLevel`. If the value of
-	// `level` is "info", it assigns `slog.LevelInfo` to `logLevel`. If the value is "error", it assigns
-	// `slog.LevelError`, and so on. If the value of `level` does not match any of the cases, it assigns
-	// `slog.LevelInfo` as the default value for `logLevel`.
+var defaultConfig = LoggerGoConfig{
+	Level:  "info",
+	Format: "plain",
+	Dev:    false,
+}
+
+func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) *slog.Logger {
+
+	mergo.Merge(&defaultConfig, config)
+
 	var logLevel slog.Leveler
 
-	switch strings.ToLower(level) {
+	switch strings.ToLower(config.Level) {
 	case "info":
 		logLevel = slog.LevelInfo
 	case "error":
@@ -41,17 +49,10 @@ func LoggerInit(level string, logFormat string, dev bool, additionalAttrs ...any
 		AddSource: true,
 	}
 
-	// The code block is checking the value of the `logFormat` parameter passed to the `LoggerInit`
-	// function. If the lowercase value of `logFormat` is equal to "json", it sets the default logger to a
-	// new logger with a JSON log format. It does this by calling `slog.NewJSONHandler` with `os.Stderr`
-	// as the output destination and `&opts` as the options. The resulting handler is then passed to
-	// `otelgoslog.NewTracingHandler`, which adds tracing functionality to the logger. Finally, the
-	// resulting tracing handler is passed to `slog.New`, which creates a new logger with the specified
-	// handler, and `slog.SetDefault` is called to set this logger as the default logger.
-	if strings.ToLower(logFormat) == "json" {
+	if strings.ToLower(config.Format) == "json" {
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
-		if dev {
+		if config.Dev {
 			devOpts := &devslog.Options{
 				HandlerOptions:    &opts,
 				MaxSlicePrintSize: 10,
