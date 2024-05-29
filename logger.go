@@ -3,6 +3,7 @@ package loggergo
 import (
 	"os"
 	"strings"
+	"time"
 
 	"log/slog"
 
@@ -11,6 +12,8 @@ import (
 	"github.com/golang-cz/devslog"
 
 	"dario.cat/mergo"
+
+	"gitlab.com/greyxor/slogor"
 )
 
 // The LoggerGoConfig type is a configuration struct for a logger in Go, with fields for level, format,
@@ -85,6 +88,13 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 				MaxSlicePrintSize: 10,
 				SortKeys:          true,
 			}
+
+			slog.SetDefault(slog.New(slogor.NewHandler(os.Stderr, slogor.Options{
+				TimeFormat: time.Stamp,
+				Level:      slog.LevelError,
+				ShowSource: false,
+			})))
+
 			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, devOpts))))
 		} else {
 			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
