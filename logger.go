@@ -7,30 +7,22 @@ import (
 
 	"log/slog"
 
-	otelgoslog "github.com/wasilak/otelgo/slog"
-
 	"github.com/golang-cz/devslog"
+	"github.com/mattn/go-isatty"
+	otelgoslog "github.com/wasilak/otelgo/slog"
+	"gitlab.com/greyxor/slogor"
 
 	"dario.cat/mergo"
 
-	"gitlab.com/greyxor/slogor"
+	"github.com/lmittmann/tint"
 )
 
-// The LoggerGoConfig type is a configuration struct for a logger in Go, with fields for level, format,
-// and dev mode.
-// @property {string} Level - The "Level" property in the LoggerGoConfig struct represents the logging
-// level. It determines the severity of the log messages that will be recorded. Common levels include
-// "debug", "info", "warning", "error", and "fatal".
-// @property {string} Format - The `Format` property in the `LoggerGoConfig` struct represents the
-// desired format for the log messages. It specifies how the log messages should be formatted when they
-// are written to the log output.
-// @property {bool} Dev - The `Dev` property is a boolean flag that indicates whether the logger is
-// running in development mode or not. It can be used to enable or disable certain logging features or
-// behaviors specific to development environments.
+// LoggerGoConfig represents the configuration options for the LoggerGo logger.
 type LoggerGoConfig struct {
-	Level  string `json:"level"`
-	Format string `json:"format"`
-	Dev    bool   `json:"dev"`
+	Level     string `json:"level"`      // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
+	Format    string `json:"format"`     // Format specifies the log format. Valid values are "text" and "json".
+	Dev       bool   `json:"dev"`        // Dev indicates whether the logger is running in development mode.
+	DevFlavor string `json:"dev_flavor"` // DevFlavor specifies the development flavor. Valid values are "vanilla" and "chocolate".
 }
 
 // The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
@@ -40,9 +32,10 @@ type LoggerGoConfig struct {
 // messages should be formatted in a plain text format. The `Dev` property is set to `false`,
 // indicating that the logger is not running in development mode.
 var defaultConfig = LoggerGoConfig{
-	Level:  "info",
-	Format: "plain",
-	Dev:    false,
+	Level:     "info",
+	Format:    "plain",
+	Dev:       false,
+	DevFlavor: "tint",
 }
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
@@ -83,19 +76,25 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
 	} else {
 		if defaultConfig.Dev {
-			devOpts := &devslog.Options{
-				HandlerOptions:    &opts,
-				MaxSlicePrintSize: 10,
-				SortKeys:          true,
+
+			if defaultConfig.DevFlavor == "slogor" {
+				slog.SetDefault(slog.New(slogor.NewHandler(os.Stderr, slogor.Options{
+					TimeFormat: time.Stamp,
+					Level:      slog.LevelError,
+					ShowSource: false,
+				})))
+			} else if defaultConfig.DevFlavor == "devslog" {
+				slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, &devslog.Options{
+					HandlerOptions:    &opts,
+					MaxSlicePrintSize: 10,
+					SortKeys:          true,
+				}))))
+			} else {
+				slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+					Level:   logLevel,
+					NoColor: !isatty.IsTerminal(os.Stderr.Fd()),
+				})))
 			}
-
-			slog.SetDefault(slog.New(slogor.NewHandler(os.Stderr, slogor.Options{
-				TimeFormat: time.Stamp,
-				Level:      slog.LevelError,
-				ShowSource: false,
-			})))
-
-			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, devOpts))))
 		} else {
 			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
 		}
