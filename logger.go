@@ -21,8 +21,8 @@ import (
 type LoggerGoConfig struct {
 	Level     string `json:"level"`      // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
 	Format    string `json:"format"`     // Format specifies the log format. Valid values are "text" and "json".
-	Dev       bool   `json:"dev"`        // Dev indicates whether the logger is running in development mode.
-	DevFlavor string `json:"dev_flavor"` // DevFlavor specifies the development flavor. Valid values are "vanilla" and "chocolate".
+	DevMode   bool   `json:"dev_mode"`   // Dev indicates whether the logger is running in development mode.
+	DevFlavor string `json:"dev_flavor"` // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
 }
 
 // The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
@@ -34,7 +34,7 @@ type LoggerGoConfig struct {
 var defaultConfig = LoggerGoConfig{
 	Level:     "info",
 	Format:    "plain",
-	Dev:       false,
+	DevMode:   false,
 	DevFlavor: "tint",
 }
 
@@ -65,11 +65,8 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 	}
 
 	opts := slog.HandlerOptions{
-		Level: logLevel,
-	}
-
-	if logLevel == slog.LevelDebug {
-		opts.AddSource = true
+		Level:     logLevel,
+		AddSource: logLevel == slog.LevelDebug,
 	}
 
 	var defaultLogger *slog.Logger
@@ -80,13 +77,13 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 	if strings.ToLower(defaultConfig.Format) == "json" {
 		defaultLogger = slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts)))
 	} else {
-		if defaultConfig.Dev {
+		if defaultConfig.DevMode {
 
 			if defaultConfig.DevFlavor == "slogor" {
 				defaultLogger = slog.New(otelgoslog.NewTracingHandler(slogor.NewHandler(os.Stderr, slogor.Options{
 					TimeFormat: time.Stamp,
-					Level:      slog.LevelError,
-					ShowSource: false,
+					Level:      opts.Level.Level(),
+					ShowSource: opts.AddSource,
 				})))
 			} else if defaultConfig.DevFlavor == "devslog" {
 				defaultLogger = slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, &devslog.Options{
@@ -96,8 +93,9 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 				})))
 			} else {
 				defaultLogger = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
-					Level:   logLevel,
-					NoColor: !isatty.IsTerminal(os.Stderr.Fd()),
+					Level:     opts.Level,
+					NoColor:   !isatty.IsTerminal(os.Stderr.Fd()),
+					AddSource: opts.AddSource,
 				}))
 			}
 		} else {
