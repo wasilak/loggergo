@@ -7,7 +7,7 @@ require (
 	github.com/golang-cz/devslog v0.0.8
 	github.com/lmittmann/tint v1.0.4
 	github.com/mattn/go-isatty v0.0.20
-	github.com/wasilak/otelgo v1.0.10
+	github.com/wasilak/otelgo v1.0.11
 	gitlab.com/greyxor/slogor v1.2.9
 )
 

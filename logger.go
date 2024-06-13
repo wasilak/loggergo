@@ -65,40 +65,47 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 	}
 
 	opts := slog.HandlerOptions{
-		Level:     logLevel,
-		AddSource: true,
+		Level: logLevel,
 	}
+
+	if logLevel == slog.LevelDebug {
+		opts.AddSource = true
+	}
+
+	var defaultLogger *slog.Logger
 
 	// The `if` statement is checking if the value of `defaultConfig.Format` is equal to "json". If it is, it
 	// sets the default logger handler to a new `slog.NewJSONHandler` with the provided options. This
 	// means that log messages will be formatted as JSON when written to the log output.
 	if strings.ToLower(defaultConfig.Format) == "json" {
-		slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts))))
+		defaultLogger = slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts)))
 	} else {
 		if defaultConfig.Dev {
 
 			if defaultConfig.DevFlavor == "slogor" {
-				slog.SetDefault(slog.New(slogor.NewHandler(os.Stderr, slogor.Options{
+				defaultLogger = slog.New(otelgoslog.NewTracingHandler(slogor.NewHandler(os.Stderr, slogor.Options{
 					TimeFormat: time.Stamp,
 					Level:      slog.LevelError,
 					ShowSource: false,
 				})))
 			} else if defaultConfig.DevFlavor == "devslog" {
-				slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, &devslog.Options{
+				defaultLogger = slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, &devslog.Options{
 					HandlerOptions:    &opts,
 					MaxSlicePrintSize: 10,
 					SortKeys:          true,
-				}))))
+				})))
 			} else {
-				slog.SetDefault(slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+				defaultLogger = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
 					Level:   logLevel,
 					NoColor: !isatty.IsTerminal(os.Stderr.Fd()),
-				})))
+				}))
 			}
 		} else {
-			slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts))))
+			defaultLogger = slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts)))
 		}
 	}
+
+	slog.SetDefault(defaultLogger)
 
 	// The code `for _, v := range additionalAttrs { slog.SetDefault(slog.Default().With(v)) }` is
 	// iterating over the `additionalAttrs` slice and calling the `With` method on the default logger for
