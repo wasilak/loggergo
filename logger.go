@@ -16,18 +16,14 @@ import (
 	"gitlab.com/greyxor/slogor"
 
 	"dario.cat/mergo"
-	// "go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
-	// semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
+	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
 
 	"github.com/lmittmann/tint"
 
 	"go.opentelemetry.io/contrib/bridges/otelslog"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
-	// "go.opentelemetry.io/otel/sdk/log"
-	// "go.opentelemetry.io/otel/sdk/resource"
 )
 
 // LoggerGoConfig represents the configuration options for the LoggerGo logger.
