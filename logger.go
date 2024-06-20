@@ -22,20 +22,25 @@ import (
 	"github.com/lmittmann/tint"
 
 	"go.opentelemetry.io/contrib/bridges/otelslog"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
+	"go.opentelemetry.io/otel/sdk/log"
+	"go.opentelemetry.io/otel/sdk/resource"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
 	// "go.opentelemetry.io/otel/sdk/log"
 	// "go.opentelemetry.io/otel/sdk/resource"
 )
 
 // LoggerGoConfig represents the configuration options for the LoggerGo logger.
 type LoggerGoConfig struct {
-	Level                 string `json:"level"`                    // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
-	Format                string `json:"format"`                   // Format specifies the log format. Valid values are "text" and "json".
-	DevMode               bool   `json:"dev_mode"`                 // Dev indicates whether the logger is running in development mode.
-	DevFlavor             string `json:"dev_flavor"`               // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
-	OutputStream          string `json:"output_stream"`            // OutputStream specifies the output stream. Valid values are "stdout" (default) and "stderr".
-	OtelTracingEnabled    bool   `json:"otel_enabled"`             // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
-	OtelLoggerName        string `json:"otel_logger_name"`         // OtelLoggerName specifies the name of the logger for OpenTelemetry.
-	OtelLogsBridgeEnabled bool   `json:"otel_logs_bridge_enabled"` // OtelLogsBridgeEnabled specifies whether the OpenTelemetry logs bridge is enabled. Default is false.
+	Level                      string `json:"level"`                          // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
+	Format                     string `json:"format"`                         // Format specifies the log format. Valid values are "text" and "json".
+	DevMode                    bool   `json:"dev_mode"`                       // Dev indicates whether the logger is running in development mode.
+	DevFlavor                  string `json:"dev_flavor"`                     // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
+	OutputStream               string `json:"output_stream"`                  // OutputStream specifies the output stream. Valid values are "stdout" (default) and "stderr".
+	OtelTracingEnabled         bool   `json:"otel_enabled"`                   // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
+	OtelLoggerName             string `json:"otel_logger_name"`               // OtelLoggerName specifies the name of the logger for OpenTelemetry.
+	OtelLogsBridgeEnabled      bool   `json:"otel_logs_bridge_enabled"`       // OtelLogsBridgeEnabled specifies whether the OpenTelemetry logs bridge is enabled. Default is false.
+	OtelLogsBridgeNativeFormat bool   `json:"otel_logs_bridge_native_format"` // OtelLogsBridgeNativeFormat specifies whether the OpenTelemetry logs bridge should use the native format or default Slog. Default is false.
 }
 
 // The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
@@ -45,14 +50,15 @@ type LoggerGoConfig struct {
 // messages should be formatted in a plain text format. The `Dev` property is set to `false`,
 // indicating that the logger is not running in development mode.
 var defaultConfig = LoggerGoConfig{
-	Level:                 "info",
-	Format:                "plain",
-	DevMode:               false,
-	DevFlavor:             "tint",
-	OutputStream:          "stdout",
-	OtelTracingEnabled:    true,
-	OtelLoggerName:        "my/pkg/name",
-	OtelLogsBridgeEnabled: false,
+	Level:                      "info",
+	Format:                     "plain",
+	DevMode:                    false,
+	DevFlavor:                  "tint",
+	OutputStream:               "stdout",
+	OtelTracingEnabled:         true,
+	OtelLoggerName:             "my/pkg/name",
+	OtelLogsBridgeEnabled:      false,
+	OtelLogsBridgeNativeFormat: false,
 }
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
@@ -133,42 +139,43 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 			return nil, err
 		}
 
-		// r, err := resource.Merge(
-		// 	resource.Default(),
-		// 	resource.NewWithAttributes(
-		// 		semconv.SchemaURL,
-		// 		semconv.ServiceName("metric-query-proxy"),
-		// 	),
-		// )
+		if defaultConfig.OtelLogsBridgeNativeFormat {
 
-		// if err != nil {
-		// 	panic(err)
-		// }
+			r, err := resource.Merge(
+				resource.Default(),
+				resource.NewWithAttributes(
+					semconv.SchemaURL,
+					semconv.ServiceName("metric-query-proxy"),
+				),
+			)
 
-		// exp, err := stdoutlog.New()
-		// if err != nil {
-		// 	panic(err)
-		// }
+			if err != nil {
+				panic(err)
+			}
 
-		// processor := log.NewSimpleProcessor(exp)
-		// stdoutProvider := log.NewLoggerProvider(
-		// 	log.NewLoggerProvider()
-		// 	log.WithResource(r),
-		// 	log.WithProcessor(processor),
-		// )
+			exp, err := stdoutlog.New()
+			if err != nil {
+				panic(err)
+			}
 
-		// slogProvider := slog.NewLogLogger(defaultHandler, opts.Level.Level())
+			processor := log.NewSimpleProcessor(exp)
+			stdoutProvider := log.NewLoggerProvider(
+				log.WithResource(r),
+				log.WithProcessor(processor),
+			)
 
-		// defaultHandler = otelslog.NewHandler(
-		// 	defaultConfig.OtelLoggerName,
-		// 	otelslog.WithLoggerProvider(provider),
-		// 	otelslog.WithLoggerProvider(slogProvider),
-		// )
+			defaultHandler = otelslog.NewHandler(
+				defaultConfig.OtelLoggerName,
+				otelslog.WithLoggerProvider(provider),
+				otelslog.WithLoggerProvider(stdoutProvider),
+			)
+		} else {
+			defaultHandler = slogmulti.Fanout(
+				otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)),
+				defaultHandler,
+			)
+		}
 
-		defaultHandler = slogmulti.Fanout(
-			otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)),
-			defaultHandler,
-		)
 	}
 
 	if defaultConfig.OtelTracingEnabled {
