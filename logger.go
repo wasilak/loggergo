@@ -10,20 +10,20 @@ import (
 
 	"github.com/golang-cz/devslog"
 	"github.com/mattn/go-isatty"
+	slogmulti "github.com/samber/slog-multi"
 	otellogs "github.com/wasilak/otelgo/logs"
 	otelgoslog "github.com/wasilak/otelgo/slog"
 	"gitlab.com/greyxor/slogor"
 
 	"dario.cat/mergo"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
-	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
+	// "go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
+	// semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
 
 	"github.com/lmittmann/tint"
 
-	slogmulti "github.com/samber/slog-multi"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
-	"go.opentelemetry.io/otel/sdk/log"
-	"go.opentelemetry.io/otel/sdk/resource"
+	// "go.opentelemetry.io/otel/sdk/log"
+	// "go.opentelemetry.io/otel/sdk/resource"
 )
 
 // LoggerGoConfig represents the configuration options for the LoggerGo logger.
@@ -133,31 +133,40 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 			return nil, err
 		}
 
-		r, err := resource.Merge(
-			resource.Default(),
-			resource.NewWithAttributes(
-				semconv.SchemaURL,
-				semconv.ServiceName("metric-query-proxy"),
-			),
-		)
+		// r, err := resource.Merge(
+		// 	resource.Default(),
+		// 	resource.NewWithAttributes(
+		// 		semconv.SchemaURL,
+		// 		semconv.ServiceName("metric-query-proxy"),
+		// 	),
+		// )
 
-		if err != nil {
-			panic(err)
-		}
+		// if err != nil {
+		// 	panic(err)
+		// }
 
-		exp, err := stdoutlog.New()
-		if err != nil {
-			panic(err)
-		}
+		// exp, err := stdoutlog.New()
+		// if err != nil {
+		// 	panic(err)
+		// }
 
-		processor := log.NewSimpleProcessor(exp)
-		stdoutProvider := log.NewLoggerProvider(
-			log.WithResource(r),
-			log.WithProcessor(processor),
-		)
+		// processor := log.NewSimpleProcessor(exp)
+		// stdoutProvider := log.NewLoggerProvider(
+		// 	log.NewLoggerProvider()
+		// 	log.WithResource(r),
+		// 	log.WithProcessor(processor),
+		// )
+
+		// slogProvider := slog.NewLogLogger(defaultHandler, opts.Level.Level())
+
+		// defaultHandler = otelslog.NewHandler(
+		// 	defaultConfig.OtelLoggerName,
+		// 	otelslog.WithLoggerProvider(provider),
+		// 	otelslog.WithLoggerProvider(slogProvider),
+		// )
 
 		defaultHandler = slogmulti.Fanout(
-			otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider), otelslog.WithLoggerProvider(stdoutProvider)),
+			otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)),
 			defaultHandler,
 		)
 	}
