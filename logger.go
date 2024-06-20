@@ -16,7 +16,7 @@ import (
 
 	"dario.cat/mergo"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
 
 	"github.com/lmittmann/tint"
 
