@@ -18,18 +18,20 @@ import (
 
 	"github.com/lmittmann/tint"
 
+	slogmulti "github.com/samber/slog-multi"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 )
 
 // LoggerGoConfig represents the configuration options for the LoggerGo logger.
 type LoggerGoConfig struct {
-	Level          string `json:"level"`            // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
-	Format         string `json:"format"`           // Format specifies the log format. Valid values are "text" and "json".
-	DevMode        bool   `json:"dev_mode"`         // Dev indicates whether the logger is running in development mode.
-	DevFlavor      string `json:"dev_flavor"`       // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
-	OutputStream   string `json:"output_stream"`    // OutputStream specifies the output stream. Valid values are "stdout" (default) and "stderr".
-	OtelEnabled    bool   `json:"otel_enabled"`     // OtelEnabled specifies whether OpenTelemetry support is enabled. Default is true.
-	OtelLoggerName string `json:"otel_logger_name"` // OtelLoggerName specifies the name of the logger for OpenTelemetry.
+	Level                 string `json:"level"`                    // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
+	Format                string `json:"format"`                   // Format specifies the log format. Valid values are "text" and "json".
+	DevMode               bool   `json:"dev_mode"`                 // Dev indicates whether the logger is running in development mode.
+	DevFlavor             string `json:"dev_flavor"`               // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
+	OutputStream          string `json:"output_stream"`            // OutputStream specifies the output stream. Valid values are "stdout" (default) and "stderr".
+	OtelTracingEnabled    bool   `json:"otel_enabled"`             // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
+	OtelLoggerName        string `json:"otel_logger_name"`         // OtelLoggerName specifies the name of the logger for OpenTelemetry.
+	OtelLogsBridgeEnabled bool   `json:"otel_logs_bridge_enabled"` // OtelLogsBridgeEnabled specifies whether the OpenTelemetry logs bridge is enabled. Default is false.
 }
 
 // The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
@@ -39,13 +41,14 @@ type LoggerGoConfig struct {
 // messages should be formatted in a plain text format. The `Dev` property is set to `false`,
 // indicating that the logger is not running in development mode.
 var defaultConfig = LoggerGoConfig{
-	Level:          "info",
-	Format:         "plain",
-	DevMode:        false,
-	DevFlavor:      "tint",
-	OutputStream:   "stdout",
-	OtelEnabled:    true,
-	OtelLoggerName: "my/pkg/name",
+	Level:                 "info",
+	Format:                "plain",
+	DevMode:               false,
+	DevFlavor:             "tint",
+	OutputStream:          "stdout",
+	OtelTracingEnabled:    true,
+	OtelLoggerName:        "my/pkg/name",
+	OtelLogsBridgeEnabled: false,
 }
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
@@ -118,11 +121,7 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 		}
 	}
 
-	var logger *slog.Logger
-
-	if defaultConfig.OtelEnabled {
-		defaultHandler = otelgoslog.NewTracingHandler(defaultHandler)
-
+	if defaultConfig.OtelLogsBridgeEnabled {
 		otelGoLogsConfig := otellogs.OtelGoLogsConfig{}
 
 		_, provider, err := otellogs.Init(ctx, otelGoLogsConfig)
@@ -130,20 +129,27 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 			return nil, err
 		}
 
-		logger = otelslog.NewLogger(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider))
-	} else {
-		logger = slog.New(defaultHandler)
+		defaultHandler = otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider))
+
+		defaultHandler = slogmulti.Fanout(
+			otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)),
+			defaultHandler,
+		)
 	}
+
+	if defaultConfig.OtelTracingEnabled {
+		defaultHandler = otelgoslog.NewTracingHandler(defaultHandler)
+	}
+
+	// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
+	slog.SetDefault(slog.New(defaultHandler))
 
 	// The code `for _, v := range additionalAttrs { slog.SetDefault(slog.Default().With(v)) }` is
 	// iterating over the `additionalAttrs` slice and calling the `With` method on the default logger for
 	// each element in the slice.
 	for _, v := range additionalAttrs {
-		logger.With(v)
+		slog.Default().With(v)
 	}
-
-	// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
-	slog.SetDefault(logger)
 
 	return slog.Default(), nil
 }
