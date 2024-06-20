@@ -19,10 +19,11 @@ import (
 
 // LoggerGoConfig represents the configuration options for the LoggerGo logger.
 type LoggerGoConfig struct {
-	Level     string `json:"level"`      // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
-	Format    string `json:"format"`     // Format specifies the log format. Valid values are "text" and "json".
-	DevMode   bool   `json:"dev_mode"`   // Dev indicates whether the logger is running in development mode.
-	DevFlavor string `json:"dev_flavor"` // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
+	Level        string `json:"level"`         // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
+	Format       string `json:"format"`        // Format specifies the log format. Valid values are "text" and "json".
+	DevMode      bool   `json:"dev_mode"`      // Dev indicates whether the logger is running in development mode.
+	DevFlavor    string `json:"dev_flavor"`    // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
+	OutputStream string `json:"output_stream"` // OutputStream specifies the output stream. Valid values are "stdout" (default) and "stderr".
 }
 
 // The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
@@ -32,10 +33,11 @@ type LoggerGoConfig struct {
 // messages should be formatted in a plain text format. The `Dev` property is set to `false`,
 // indicating that the logger is not running in development mode.
 var defaultConfig = LoggerGoConfig{
-	Level:     "info",
-	Format:    "plain",
-	DevMode:   false,
-	DevFlavor: "tint",
+	Level:        "info",
+	Format:       "plain",
+	DevMode:      false,
+	DevFlavor:    "tint",
+	OutputStream: "stdout",
 }
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
@@ -69,41 +71,46 @@ func LoggerInit(config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, er
 		AddSource: logLevel == slog.LevelDebug,
 	}
 
-	var defaultLogger *slog.Logger
+	var defaultHandler slog.Handler
+
+	var defaultOutputStream = os.Stdout
+	if strings.ToLower(defaultConfig.OutputStream) == "stderr" {
+		defaultOutputStream = os.Stderr
+	}
 
 	// The `if` statement is checking if the value of `defaultConfig.Format` is equal to "json". If it is, it
 	// sets the default logger handler to a new `slog.NewJSONHandler` with the provided options. This
 	// means that log messages will be formatted as JSON when written to the log output.
 	if strings.ToLower(defaultConfig.Format) == "json" {
-		defaultLogger = slog.New(otelgoslog.NewTracingHandler(slog.NewJSONHandler(os.Stderr, &opts)))
+		defaultHandler = slog.NewJSONHandler(defaultOutputStream, &opts)
 	} else {
 		if defaultConfig.DevMode {
 
 			if defaultConfig.DevFlavor == "slogor" {
-				defaultLogger = slog.New(otelgoslog.NewTracingHandler(slogor.NewHandler(os.Stderr, slogor.Options{
+				defaultHandler = slogor.NewHandler(defaultOutputStream, slogor.Options{
 					TimeFormat: time.Stamp,
 					Level:      opts.Level.Level(),
 					ShowSource: opts.AddSource,
-				})))
+				})
 			} else if defaultConfig.DevFlavor == "devslog" {
-				defaultLogger = slog.New(otelgoslog.NewTracingHandler(devslog.NewHandler(os.Stderr, &devslog.Options{
+				defaultHandler = devslog.NewHandler(defaultOutputStream, &devslog.Options{
 					HandlerOptions:    &opts,
 					MaxSlicePrintSize: 10,
 					SortKeys:          true,
-				})))
+				})
 			} else {
-				defaultLogger = slog.New(tint.NewHandler(os.Stderr, &tint.Options{
+				defaultHandler = tint.NewHandler(defaultOutputStream, &tint.Options{
 					Level:     opts.Level,
 					NoColor:   !isatty.IsTerminal(os.Stderr.Fd()),
 					AddSource: opts.AddSource,
-				}))
+				})
 			}
 		} else {
-			defaultLogger = slog.New(otelgoslog.NewTracingHandler(slog.NewTextHandler(os.Stderr, &opts)))
+			defaultHandler = slog.NewTextHandler(defaultOutputStream, &opts)
 		}
 	}
 
-	slog.SetDefault(defaultLogger)
+	slog.SetDefault(slog.New(otelgoslog.NewTracingHandler(defaultHandler)))
 
 	// The code `for _, v := range additionalAttrs { slog.SetDefault(slog.Default().With(v)) }` is
 	// iterating over the `additionalAttrs` slice and calling the `With` method on the default logger for
