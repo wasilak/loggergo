@@ -16,8 +16,8 @@ import (
 	"dario.cat/mergo"
 )
 
-// LoggerGoConfig represents the configuration options for the LoggerGo logger.
-type LoggerGoConfig struct {
+// Config represents the configuration options for the LoggerGo logger.
+type Config struct {
 	Level              string   `json:"level"`             // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
 	Format             string   `json:"format"`            // Format specifies the log format. Valid values are "plain" (default), "otel" and "json".
 	DevMode            bool     `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
@@ -29,13 +29,13 @@ type LoggerGoConfig struct {
 	OtelServiceName    string   `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
 }
 
-// The line `var defaultConfig = LoggerGoConfig{ Level: "info", Format: "plain", Dev: false }` is
+// The line `var defaultConfig = Config{ Level: "info", Format: "plain", Dev: false }` is
 // initializing a variable named `defaultConfig` with a default configuration for the logger. It sets
 // the `Level` property to "info", indicating that the logger should record log messages with a
 // severity level of "info" or higher. The `Format` property is set to "plain", specifying that the log
 // messages should be formatted in a plain text format. The `Dev` property is set to `false`,
 // indicating that the logger is not running in development mode.
-var defaultConfig = LoggerGoConfig{
+var defaultConfig = Config{
 	Level:              "info",
 	Format:             "plain",
 	DevMode:            false,
@@ -49,7 +49,7 @@ var defaultConfig = LoggerGoConfig{
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
 // attributes.
-func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...any) (*slog.Logger, error) {
+func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*slog.Logger, error) {
 	var defaultHandler slog.Handler
 
 	err := mergo.Merge(&defaultConfig, config, mergo.WithOverride)

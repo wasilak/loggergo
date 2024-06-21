@@ -23,7 +23,7 @@ import (
 // It checks the defaultConfig.Format and sets up the appropriate handler based on the format.
 // If defaultConfig.OtelTracingEnabled is true, it wraps the handler with otelgoslog.NewTracingHandler.
 // Returns the handler and any error encountered.
-func consoleMode(defaultConfig LoggerGoConfig, opts slog.HandlerOptions) (slog.Handler, error) {
+func consoleMode(defaultConfig Config, opts slog.HandlerOptions) (slog.Handler, error) {
 	var handler slog.Handler
 	var err error
 
@@ -52,7 +52,7 @@ func consoleMode(defaultConfig LoggerGoConfig, opts slog.HandlerOptions) (slog.H
 // otelMode returns a slog.Handler for OpenTelemetry mode based on the provided defaultConfig.
 // It initializes the otellogs package and returns a handler with the otelslog.WithLoggerProvider option.
 // Returns the handler and any error encountered.
-func otelMode(ctx context.Context, defaultConfig LoggerGoConfig) (slog.Handler, error) {
+func otelMode(ctx context.Context, defaultConfig Config) (slog.Handler, error) {
 	otelGoLogsConfig := otellogs.OtelGoLogsConfig{}
 
 	_, provider, err := otellogs.Init(ctx, otelGoLogsConfig)
