@@ -19,6 +19,10 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
 )
 
+// consoleMode returns a slog.Handler based on the provided defaultConfig and opts.
+// It checks the defaultConfig.Format and sets up the appropriate handler based on the format.
+// If defaultConfig.OtelTracingEnabled is true, it wraps the handler with otelgoslog.NewTracingHandler.
+// Returns the handler and any error encountered.
 func consoleMode(defaultConfig LoggerGoConfig, opts slog.HandlerOptions) (slog.Handler, error) {
 	var handler slog.Handler
 	var err error
@@ -45,6 +49,9 @@ func consoleMode(defaultConfig LoggerGoConfig, opts slog.HandlerOptions) (slog.H
 	return handler, nil
 }
 
+// otelMode returns a slog.Handler for OpenTelemetry mode based on the provided defaultConfig.
+// It initializes the otellogs package and returns a handler with the otelslog.WithLoggerProvider option.
+// Returns the handler and any error encountered.
 func otelMode(ctx context.Context, defaultConfig LoggerGoConfig) (slog.Handler, error) {
 	otelGoLogsConfig := otellogs.OtelGoLogsConfig{}
 
@@ -56,6 +63,10 @@ func otelMode(ctx context.Context, defaultConfig LoggerGoConfig) (slog.Handler, 
 	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)), nil
 }
 
+// setupOtelFormat sets up a slog.Handler for OpenTelemetry format.
+// It merges the default resource with the service name attribute, creates a stdoutlog exporter,
+// and sets up a log processor and logger provider with the merged resource and exporter.
+// Returns the handler and any error encountered.
 func setupOtelFormat() (slog.Handler, error) {
 	resource, err := resource.Merge(
 		resource.Default(),
@@ -82,6 +93,9 @@ func setupOtelFormat() (slog.Handler, error) {
 	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(stdoutProvider)), nil
 }
 
+// setupPlainFormat sets up a slog.Handler for plain format.
+// If defaultConfig.DevMode is true, it checks the defaultConfig.DevFlavor and sets up the appropriate handler based on the flavor.
+// Returns the handler and any error encountered.
 func setupPlainFormat(opts slog.HandlerOptions) (slog.Handler, error) {
 	if defaultConfig.DevMode {
 

@@ -1,3 +1,6 @@
+// Package loggergo provides functionality for configuring and setting up different logging modes in Go applications.
+// It includes support for OpenTelemetry format, JSON format, and plain format with different flavors.
+// The package also supports enabling OpenTelemetry tracing for the logs.
 package loggergo
 
 import (
@@ -106,25 +109,4 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 	}
 
 	return slog.Default(), nil
-}
-
-func setupLogLevel() slog.Leveler {
-	var logLevel slog.Leveler
-
-	// The `switch` statement is used to evaluate the value of `defaultConfig.Level` and assign a corresponding
-	// `slog.Level` value to the `logLevel` variable.
-	switch defaultConfig.Level {
-	case "info":
-		logLevel = slog.LevelInfo
-	case "error":
-		logLevel = slog.LevelError
-	case "warn":
-		logLevel = slog.LevelWarn
-	case "debug":
-		logLevel = slog.LevelDebug
-	default:
-		logLevel = slog.LevelInfo
-	}
-
-	return logLevel
 }
