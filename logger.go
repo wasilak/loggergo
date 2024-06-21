@@ -55,7 +55,7 @@ func LoggerInit(ctx context.Context, config LoggerGoConfig, additionalAttrs ...a
 	}
 
 	// normalize the log level, mode and format
-	defaultConfig.Mode = strings.ToLower(defaultConfig.Level)
+	defaultConfig.Level = strings.ToLower(defaultConfig.Level)
 	defaultConfig.Mode = strings.ToLower(defaultConfig.Mode)
 	defaultConfig.Format = strings.ToLower(defaultConfig.Format)
 
