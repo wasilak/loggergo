@@ -27,7 +27,7 @@ func (o OutputType) String() string {
 	}
 }
 
-func (o OutputType) FromString(name string) OutputType {
+func OutputTypeFromString(name string) OutputType {
 	switch name {
 	case "console":
 		return OutputConsole
@@ -65,7 +65,7 @@ func (f LogFormat) String() string {
 	}
 }
 
-func (f LogFormat) FromString(name string) LogFormat {
+func LogFormatFromString(name string) LogFormat {
 	switch name {
 	case "text":
 		return LogFormatText
@@ -103,7 +103,7 @@ func (f DevFlavor) String() string {
 	}
 }
 
-func (f DevFlavor) FromString(name string) DevFlavor {
+func DevFlavorFromString(name string) DevFlavor {
 	switch name {
 	case "tint":
 		return DevFlavorTint
@@ -116,7 +116,7 @@ func (f DevFlavor) FromString(name string) DevFlavor {
 	}
 }
 
-func LogLevelFromString(name string) slog.Level {
+func LevFromString(name string) slog.Level {
 	switch name {
 	case "debug":
 		return slog.LevelDebug
