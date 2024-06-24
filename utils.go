@@ -25,6 +25,19 @@ func (o OutputType) String() string {
 	}
 }
 
+func (o OutputType) FromString(name string) OutputType {
+	switch name {
+	case "console":
+		return OutputConsole
+	case "otel":
+		return OutputOtel
+	case "fanout":
+		return OutputFanout
+	default:
+		return OutputConsole
+	}
+}
+
 // LogFormat represents the format of the log.
 type LogFormat int
 
@@ -50,6 +63,19 @@ func (f LogFormat) String() string {
 	}
 }
 
+func (f LogFormat) FromString(name string) LogFormat {
+	switch name {
+	case "text":
+		return LogFormatText
+	case "json":
+		return LogFormatJSON
+	case "otel":
+		return LogFormatOtel
+	default:
+		return LogFormatText
+	}
+}
+
 // DevFlavor represents the flavor of the development environment.
 type DevFlavor int
 
@@ -72,5 +98,18 @@ func (f DevFlavor) String() string {
 		return "devslog"
 	default:
 		return "unknown"
+	}
+}
+
+func (f DevFlavor) FromString(name string) DevFlavor {
+	switch name {
+	case "tint":
+		return DevFlavorTint
+	case "slogor":
+		return DevFlavorSlogor
+	case "devslog":
+		return DevFlavorDevslog
+	default:
+		return DevFlavorTint
 	}
 }
