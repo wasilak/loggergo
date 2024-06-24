@@ -18,15 +18,15 @@ import (
 
 // Config represents the configuration options for the LoggerGo logger.
 type Config struct {
-	Level              string   `json:"level"`             // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
-	Format             string   `json:"format"`            // Format specifies the log format. Valid values are "plain" (default), "otel" and "json".
-	DevMode            bool     `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
-	DevFlavor          string   `json:"dev_flavor"`        // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
-	OutputStream       *os.File `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
-	OtelTracingEnabled bool     `json:"otel_enabled"`      // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
-	OtelLoggerName     string   `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
-	Mode               string   `json:"mode"`              // Mode specifies the mode of the logger. Valid values are "console", "otel" and "fanout" (default) - which is a combination of console and otel.
-	OtelServiceName    string   `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
+	Level              string     `json:"level"`             // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
+	Format             string     `json:"format"`            // Format specifies the log format. Valid values are "plain" (default), "otel" and "json".
+	DevMode            bool       `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
+	DevFlavor          string     `json:"dev_flavor"`        // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
+	OutputStream       *os.File   `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
+	OtelTracingEnabled bool       `json:"otel_enabled"`      // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
+	OtelLoggerName     string     `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
+	Output             OutputType `json:"output"`            // Output specifies where logs will be sent to. Valid values are "console", "otel" and "fanout" (default) - which is a combination of "console" and "otel".
+	OtelServiceName    string     `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
 }
 
 // The line `var defaultConfig = Config{ Level: "info", Format: "plain", Dev: false }` is
@@ -43,7 +43,7 @@ var defaultConfig = Config{
 	OutputStream:       os.Stdout,
 	OtelTracingEnabled: true,
 	OtelLoggerName:     "my/pkg/name",
-	Mode:               "fanout",
+	Output:             OutputConsole,
 	OtelServiceName:    "my-service",
 }
 
@@ -59,7 +59,6 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 
 	// normalize the log level, mode and format
 	defaultConfig.Level = strings.ToLower(defaultConfig.Level)
-	defaultConfig.Mode = strings.ToLower(defaultConfig.Mode)
 	defaultConfig.Format = strings.ToLower(defaultConfig.Format)
 
 	logLevel := setupLogLevel()
@@ -69,18 +68,18 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 		AddSource: logLevel == slog.LevelDebug,
 	}
 
-	switch defaultConfig.Mode {
-	case "console":
+	switch defaultConfig.Output {
+	case OutputConsole:
 		defaultHandler, err = consoleMode(defaultConfig, opts)
 		if err != nil {
 			return nil, err
 		}
-	case "otel":
+	case OutputOtel:
 		defaultHandler, err = otelMode(ctx, defaultConfig)
 		if err != nil {
 			return nil, err
 		}
-	case "fanout":
+	case OutputFanout:
 		consoleModeHandler, err := consoleMode(defaultConfig, opts)
 		if err != nil {
 			return nil, err
@@ -95,7 +94,7 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 			otelModeHandler,
 		)
 	default:
-		return nil, fmt.Errorf("invalid mode: %s. Valid options: [console, otel, fanout] ", defaultConfig.Mode)
+		return nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", defaultConfig.Output)
 	}
 
 	// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
