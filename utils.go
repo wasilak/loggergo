@@ -1,5 +1,7 @@
 package loggergo
 
+import "log/slog"
+
 // OutputType represents the type of output for the logger.
 type OutputType int
 
@@ -111,5 +113,20 @@ func (f DevFlavor) FromString(name string) DevFlavor {
 		return DevFlavorDevslog
 	default:
 		return DevFlavorTint
+	}
+}
+
+func LogLevelFromString(name string) slog.Level {
+	switch name {
+	case "debug":
+		return slog.LevelDebug
+	case "info":
+		return slog.LevelInfo
+	case "warn":
+		return slog.LevelWarn
+	case "error":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo
 	}
 }
