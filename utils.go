@@ -116,7 +116,7 @@ func DevFlavorFromString(name string) DevFlavor {
 	}
 }
 
-func LevFromString(name string) slog.Level {
+func LogLevelFromString(name string) slog.Level {
 	switch name {
 	case "debug":
 		return slog.LevelDebug
