@@ -1,7 +1,5 @@
 package loggergo
 
-import "log/slog"
-
 // OutputType represents the type of output for the logger.
 type OutputType int
 
@@ -27,26 +25,52 @@ func (o OutputType) String() string {
 	}
 }
 
-// setupLogLevel sets up the log level based on the value of defaultConfig.Level.
-// It evaluates the value of defaultConfig.Level and assigns a corresponding slog.Level value to the logLevel variable.
-// If the value of defaultConfig.Level is not recognized, it defaults to slog.LevelInfo.
-func setupLogLevel() slog.Leveler {
-	var logLevel slog.Leveler
+// LogFormat represents the format of the log.
+type LogFormat int
 
-	// The `switch` statement is used to evaluate the value of `defaultConfig.Level` and assign a corresponding
-	// `slog.Level` value to the `logLevel` variable.
-	switch defaultConfig.Level {
-	case "info":
-		logLevel = slog.LevelInfo
-	case "error":
-		logLevel = slog.LevelError
-	case "warn":
-		logLevel = slog.LevelWarn
-	case "debug":
-		logLevel = slog.LevelDebug
+const (
+	// LogFormatText represents text format.
+	LogFormatText LogFormat = iota
+	// LogFormatJSON represents JSON format.
+	LogFormatJSON
+	// LogFormatOtel represents OTEL (JSON) format.
+	LogFormatOtel
+)
+
+func (f LogFormat) String() string {
+	switch f {
+	case LogFormatText:
+		return "text"
+	case LogFormatJSON:
+		return "json"
+	case LogFormatOtel:
+		return "otel"
 	default:
-		logLevel = slog.LevelInfo
+		return "unknown"
 	}
+}
 
-	return logLevel
+// DevFlavor represents the flavor of the development environment.
+type DevFlavor int
+
+const (
+	// DevFlavorTint represents the "tint" development flavor.
+	DevFlavorTint DevFlavor = iota
+	// DevFlavorSlogor represents the "slogor" development flavor.
+	DevFlavorSlogor
+	// DevFlavorDevslog represents the production "devslog" flavor.
+	DevFlavorDevslog
+)
+
+func (f DevFlavor) String() string {
+	switch f {
+	case DevFlavorTint:
+		return "tint"
+	case DevFlavorSlogor:
+		return "slogor"
+	case DevFlavorDevslog:
+		return "devslog"
+	default:
+		return "unknown"
+	}
 }

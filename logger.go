@@ -7,7 +7,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"log/slog"
 
@@ -18,28 +17,22 @@ import (
 
 // Config represents the configuration options for the LoggerGo logger.
 type Config struct {
-	Level              string     `json:"level"`             // Level specifies the log level. Valid values are "debug", "info", "warn", and "error".
-	Format             string     `json:"format"`            // Format specifies the log format. Valid values are "plain" (default), "otel" and "json".
-	DevMode            bool       `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
-	DevFlavor          string     `json:"dev_flavor"`        // DevFlavor specifies the development flavor. Valid values are "tint" (default), slogor and "devslog".
-	OutputStream       *os.File   `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
-	OtelTracingEnabled bool       `json:"otel_enabled"`      // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
-	OtelLoggerName     string     `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
-	Output             OutputType `json:"output"`            // Output specifies where logs will be sent to. Valid values are "console", "otel" and "fanout" (default) - which is a combination of "console" and "otel".
-	OtelServiceName    string     `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
+	Level              slog.Leveler `json:"level"`             // Level specifies the log level. Valid values are any of the slog.Level constants (e.g., slog.LevelInfo, slog.LevelError). Default is slog.LevelInfo.
+	Format             LogFormat    `json:"format"`            // Format specifies the log format. Valid values are loggergo.LogFormatText, loggergo.LogFormatJSON, and loggergo.LogFormatOtel. Default is loggergo.LogFormatJSON.
+	DevMode            bool         `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
+	DevFlavor          DevFlavor    `json:"dev_flavor"`        // DevFlavor specifies the development flavor. Valid values are loggergo.DevFlavorTint and loggergo.DevFlavorSlogor. Default is loggergo.DevFlavorTint.
+	OutputStream       *os.File     `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
+	OtelTracingEnabled bool         `json:"otel_enabled"`      // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
+	OtelLoggerName     string       `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
+	Output             OutputType   `json:"output"`            // Output specifies the type of output for the logger. Valid values are loggergo.OutputConsole, loggergo.OutputOtel, and loggergo.OutputFanout. Default is loggergo.OutputConsole.
+	OtelServiceName    string       `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
 }
 
-// The line `var defaultConfig = Config{ Level: "info", Format: "plain", Dev: false }` is
-// initializing a variable named `defaultConfig` with a default configuration for the logger. It sets
-// the `Level` property to "info", indicating that the logger should record log messages with a
-// severity level of "info" or higher. The `Format` property is set to "plain", specifying that the log
-// messages should be formatted in a plain text format. The `Dev` property is set to `false`,
-// indicating that the logger is not running in development mode.
 var defaultConfig = Config{
-	Level:              "info",
-	Format:             "plain",
+	Level:              slog.LevelInfo,
+	Format:             LogFormatJSON,
 	DevMode:            false,
-	DevFlavor:          "tint",
+	DevFlavor:          DevFlavorTint,
 	OutputStream:       os.Stdout,
 	OtelTracingEnabled: true,
 	OtelLoggerName:     "my/pkg/name",
@@ -57,15 +50,9 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 		return nil, err
 	}
 
-	// normalize the log level, mode and format
-	defaultConfig.Level = strings.ToLower(defaultConfig.Level)
-	defaultConfig.Format = strings.ToLower(defaultConfig.Format)
-
-	logLevel := setupLogLevel()
-
 	opts := slog.HandlerOptions{
-		Level:     logLevel,
-		AddSource: logLevel == slog.LevelDebug,
+		Level:     defaultConfig.Level,
+		AddSource: defaultConfig.Level == slog.LevelDebug,
 	}
 
 	switch defaultConfig.Output {

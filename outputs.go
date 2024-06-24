@@ -27,15 +27,15 @@ func consoleMode(defaultConfig Config, opts slog.HandlerOptions) (slog.Handler, 
 	var handler slog.Handler
 	var err error
 
-	if defaultConfig.Format == "otel" {
+	if defaultConfig.Format == LogFormatOtel {
 		return setupOtelFormat()
 	}
 
-	if defaultConfig.Format == "json" {
+	if defaultConfig.Format == LogFormatJSON {
 		handler = slog.NewJSONHandler(defaultConfig.OutputStream, &opts)
 	}
 
-	if defaultConfig.Format == "plain" {
+	if defaultConfig.Format == LogFormatText {
 		handler, err = setupPlainFormat(opts)
 		if err != nil {
 			return nil, err
@@ -99,13 +99,13 @@ func setupOtelFormat() (slog.Handler, error) {
 func setupPlainFormat(opts slog.HandlerOptions) (slog.Handler, error) {
 	if defaultConfig.DevMode {
 
-		if defaultConfig.DevFlavor == "slogor" {
+		if defaultConfig.DevFlavor == DevFlavorSlogor {
 			return slogor.NewHandler(defaultConfig.OutputStream, slogor.Options{
 				TimeFormat: time.Stamp,
 				Level:      opts.Level.Level(),
 				ShowSource: opts.AddSource,
 			}), nil
-		} else if defaultConfig.DevFlavor == "devslog" {
+		} else if defaultConfig.DevFlavor == DevFlavorDevslog {
 			return devslog.NewHandler(defaultConfig.OutputStream, &devslog.Options{
 				HandlerOptions:    &opts,
 				MaxSlicePrintSize: 10,
