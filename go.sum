@@ -29,8 +29,8 @@ github.com/samber/slog-multi v1.2.0 h1:JIebVdmeGkCMd5/ticlmU+aDYl4tdAZBmp5uLaSzr
 github.com/samber/slog-multi v1.2.0/go.mod h1:uLAvHpGqbYgX4FSL0p1ZwoLuveIAJvBECtE07XmYvFo=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
-github.com/wasilak/otelgo v1.0.17 h1:Fec9zKfPyaAa+cOoQDwY1ZNcii7npWl+WieIeyyfKx8=
-github.com/wasilak/otelgo v1.0.17/go.mod h1:7PiaT1gl+bUUV0EbTdrAc4k/K5SZKf1vd1Y4lJrw21M=
+github.com/wasilak/otelgo v1.0.18 h1:1uJF1X1r+clJkT/viisGAkrj2cPGvKtKKmuSYwKuZTE=
+github.com/wasilak/otelgo v1.0.18/go.mod h1:DZnHm5jy9ZsoqtuJ+SYzqKCov09q8Ibu/tw+asgaIy8=
 gitlab.com/greyxor/slogor v1.2.10 h1:X7zyo65C+Du557pY33UGF/pgjaL7dV06mMQ3mTMQaRU=
 gitlab.com/greyxor/slogor v1.2.10/go.mod h1:UuUL+pIwwdxzD4AKsJxzk07pv43fnyQfGLIw9Yog3jc=
 go.opentelemetry.io/contrib/bridges/otelslog v0.3.0 h1:Kf8NK4WW/pn3f9Gwx6XJAB2zlaW2M3VLQ4sQ3TKJhA8=

@@ -1,6 +1,7 @@
 module github.com/wasilak/loggergo
 
 go 1.22
+toolchain go1.22.5
 
 require (
 	dario.cat/mergo v1.0.0
@@ -8,7 +9,7 @@ require (
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.2.0
-	github.com/wasilak/otelgo v1.0.17
+	github.com/wasilak/otelgo v1.0.18
 	gitlab.com/greyxor/slogor v1.2.10
 	go.opentelemetry.io/contrib/bridges/otelslog v0.3.0
 	go.opentelemetry.io/otel v1.28.0
