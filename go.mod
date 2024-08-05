@@ -10,7 +10,7 @@ require (
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.2.0
-	github.com/wasilak/otelgo v1.0.19
+	github.com/wasilak/otelgo v1.1.0
 	gitlab.com/greyxor/slogor v1.2.10
 	go.opentelemetry.io/contrib/bridges/otelslog v0.3.0
 	go.opentelemetry.io/otel v1.28.0
