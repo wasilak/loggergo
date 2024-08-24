@@ -1,6 +1,9 @@
 package loggergo
 
-import "log/slog"
+import (
+	"log/slog"
+	"strings"
+)
 
 // OutputType represents the type of output for the logger.
 type OutputType int
@@ -44,10 +47,10 @@ func OutputTypeFromString(name string) OutputType {
 type LogFormat int
 
 const (
-	// LogFormatText represents text format.
-	LogFormatText LogFormat = iota
-	// LogFormatJSON represents JSON format.
-	LogFormatJSON
+	// LogFormatJSON represents text format.
+	LogFormatJSON LogFormat = iota
+	// LogFormatText represents JSON format.
+	LogFormatText
 	// LogFormatOtel represents OTEL (JSON) format.
 	LogFormatOtel
 )
@@ -66,7 +69,7 @@ func (f LogFormat) String() string {
 }
 
 func LogFormatFromString(name string) LogFormat {
-	switch name {
+	switch strings.ToLower(name) {
 	case "text":
 		return LogFormatText
 	case "json":
@@ -104,7 +107,7 @@ func (f DevFlavor) String() string {
 }
 
 func DevFlavorFromString(name string) DevFlavor {
-	switch name {
+	switch strings.ToLower(name) {
 	case "tint":
 		return DevFlavorTint
 	case "slogor":
@@ -117,7 +120,7 @@ func DevFlavorFromString(name string) DevFlavor {
 }
 
 func LogLevelFromString(name string) slog.Level {
-	switch name {
+	switch strings.ToLower(name) {
 	case "debug":
 		return slog.LevelDebug
 	case "info":

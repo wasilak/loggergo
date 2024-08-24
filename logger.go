@@ -26,6 +26,7 @@ type Config struct {
 	OtelLoggerName     string       `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
 	Output             OutputType   `json:"output"`            // Output specifies the type of output for the logger. Valid values are loggergo.OutputConsole, loggergo.OutputOtel, and loggergo.OutputFanout. Default is loggergo.OutputConsole.
 	OtelServiceName    string       `json:"otel_service_name"` // OtelServiceName specifies the service name for OpenTelemetry.
+	SetAsDefault       bool         `json:"set_as_default"`    // SetAsDefault specifies whether the logger should be set as the default logger.
 }
 
 var defaultConfig = Config{
@@ -38,6 +39,7 @@ var defaultConfig = Config{
 	OtelLoggerName:     "my/pkg/name",
 	Output:             OutputConsole,
 	OtelServiceName:    "my-service",
+	SetAsDefault:       true,
 }
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
@@ -84,15 +86,18 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 		return nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", defaultConfig.Output)
 	}
 
-	// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
-	slog.SetDefault(slog.New(defaultHandler))
+	logger := slog.New(defaultHandler)
 
-	// The code `for _, v := range additionalAttrs { slog.SetDefault(slog.Default().With(v)) }` is
-	// iterating over the `additionalAttrs` slice and calling the `With` method on the default logger for
+	// The code below is iterating over the `additionalAttrs` slice and calling the `With` method on the default logger for
 	// each element in the slice.
 	for _, v := range additionalAttrs {
-		slog.Default().With(v)
+		logger.With(v)
 	}
 
-	return slog.Default(), nil
+	if defaultConfig.SetAsDefault {
+		// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
+		slog.SetDefault(logger)
+	}
+
+	return logger, nil
 }

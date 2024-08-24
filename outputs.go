@@ -28,7 +28,7 @@ func consoleMode(defaultConfig Config, opts slog.HandlerOptions) (slog.Handler, 
 	var err error
 
 	if defaultConfig.Format == LogFormatOtel {
-		return setupOtelFormat()
+		return setupOtelFormat(defaultConfig)
 	}
 
 	if defaultConfig.Format == LogFormatJSON {
@@ -36,7 +36,7 @@ func consoleMode(defaultConfig Config, opts slog.HandlerOptions) (slog.Handler, 
 	}
 
 	if defaultConfig.Format == LogFormatText {
-		handler, err = setupPlainFormat(opts)
+		handler, err = setupPlainFormat(opts, defaultConfig)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +67,7 @@ func otelMode(ctx context.Context, defaultConfig Config) (slog.Handler, error) {
 // It merges the default resource with the service name attribute, creates a stdoutlog exporter,
 // and sets up a log processor and logger provider with the merged resource and exporter.
 // Returns the handler and any error encountered.
-func setupOtelFormat() (slog.Handler, error) {
+func setupOtelFormat(defaultConfig Config) (slog.Handler, error) {
 	resource, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
@@ -96,7 +96,7 @@ func setupOtelFormat() (slog.Handler, error) {
 // setupPlainFormat sets up a slog.Handler for plain format.
 // If defaultConfig.DevMode is true, it checks the defaultConfig.DevFlavor and sets up the appropriate handler based on the flavor.
 // Returns the handler and any error encountered.
-func setupPlainFormat(opts slog.HandlerOptions) (slog.Handler, error) {
+func setupPlainFormat(opts slog.HandlerOptions, defaultConfig Config) (slog.Handler, error) {
 	if defaultConfig.DevMode {
 
 		if defaultConfig.DevFlavor == DevFlavorSlogor {
