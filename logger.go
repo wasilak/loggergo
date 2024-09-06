@@ -6,6 +6,7 @@ package loggergo
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 
 	"log/slog"
@@ -21,7 +22,7 @@ type Config struct {
 	Format             LogFormat    `json:"format"`            // Format specifies the log format. Valid values are loggergo.LogFormatText, loggergo.LogFormatJSON, and loggergo.LogFormatOtel. Default is loggergo.LogFormatJSON.
 	DevMode            bool         `json:"dev_mode"`          // Dev indicates whether the logger is running in development mode.
 	DevFlavor          DevFlavor    `json:"dev_flavor"`        // DevFlavor specifies the development flavor. Valid values are loggergo.DevFlavorTint and loggergo.DevFlavorSlogor. Default is loggergo.DevFlavorTint.
-	OutputStream       *os.File     `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
+	OutputStream       io.Writer    `json:"output_stream"`     // OutputStream specifies the output stream for the logger. Valid values are "stdout" (default) and "stderr".
 	OtelTracingEnabled bool         `json:"otel_enabled"`      // OtelTracingEnabled specifies whether OpenTelemetry support is enabled. Default is true.
 	OtelLoggerName     string       `json:"otel_logger_name"`  // OtelLoggerName specifies the name of the logger for OpenTelemetry.
 	Output             OutputType   `json:"output"`            // Output specifies the type of output for the logger. Valid values are loggergo.OutputConsole, loggergo.OutputOtel, and loggergo.OutputFanout. Default is loggergo.OutputConsole.
