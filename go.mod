@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.2.2
 	github.com/wasilak/otelgo v1.1.1
-	gitlab.com/greyxor/slogor v1.2.11
+	gitlab.com/greyxor/slogor v1.3.0
 	go.opentelemetry.io/contrib/bridges/otelslog v0.4.0
 	go.opentelemetry.io/otel v1.30.0
 	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.6.0
