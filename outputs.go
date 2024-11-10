@@ -100,11 +100,7 @@ func setupPlainFormat(opts slog.HandlerOptions, defaultConfig Config) (slog.Hand
 	if defaultConfig.DevMode {
 
 		if defaultConfig.DevFlavor == DevFlavorSlogor {
-			return slogor.NewHandler(defaultConfig.OutputStream, slogor.Options{
-				TimeFormat: time.Stamp,
-				Level:      opts.Level.Level(),
-				ShowSource: opts.AddSource,
-			}), nil
+			return slogor.NewHandler(defaultConfig.OutputStream, slogor.ShowSource(), slogor.SetTimeFormat(time.Stamp), slogor.SetLevel(opts.Level.Level())), nil
 		} else if defaultConfig.DevFlavor == DevFlavorDevslog {
 			return devslog.NewHandler(defaultConfig.OutputStream, &devslog.Options{
 				HandlerOptions:    &opts,
