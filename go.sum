@@ -33,8 +33,6 @@ github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsT
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/wasilak/otelgo v1.1.1 h1:f8p0VYTwSfPl0OC9BwO5r1DkQ/oNt9YoHTy19RQCNjs=
 github.com/wasilak/otelgo v1.1.1/go.mod h1:inPRzMpVWJ54sDHq9Xdg0dhjHWzMME1uP4RSgr1S8lo=
-gitlab.com/greyxor/slogor v1.5.0 h1:9mwWDoK+gagAkYjSEEVi5QZ+5uq5KsF9khVsKJ/VSQc=
-gitlab.com/greyxor/slogor v1.5.0/go.mod h1:P8dDYZxKsh/omu91z+vep/m78GxWEOc2KP2f0zaCasE=
 gitlab.com/greyxor/slogor v1.5.1 h1:XdXkCAnoxcBV4j9AiPLjabQPP0yEd/mRYu6tTRY84UQ=
 gitlab.com/greyxor/slogor v1.5.1/go.mod h1:P8dDYZxKsh/omu91z+vep/m78GxWEOc2KP2f0zaCasE=
 go.opentelemetry.io/contrib/bridges/otelslog v0.7.0 h1:uLoBPCQtxi5eFRryx5yd3DTxOKRQSils1VJUKjFnlSc=
