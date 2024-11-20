@@ -43,6 +43,8 @@ var defaultConfig = Config{
 	SetAsDefault:       true,
 }
 
+var logLevel = new(slog.LevelVar)
+
 // The LoggerInit function initializes a logger with the provided configuration and additional
 // attributes.
 func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*slog.Logger, error) {
@@ -53,8 +55,10 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 		return nil, err
 	}
 
+	logLevel.Set(defaultConfig.Level.Level())
+
 	opts := slog.HandlerOptions{
-		Level:     defaultConfig.Level,
+		Level:     logLevel,
 		AddSource: defaultConfig.Level == slog.LevelDebug,
 	}
 
@@ -101,4 +105,8 @@ func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (*sl
 	}
 
 	return logger, nil
+}
+
+func GetLogLevelAccessor() *slog.LevelVar {
+	return logLevel
 }

@@ -40,5 +40,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	logLevelConfig := loggergo.GetLogLevelAccessor()
+
 	slog.InfoContext(ctx, "Hello, World!")
+	slog.DebugContext(ctx, "Hello, Debug #1!") // will not be printed as the default log level is info
+
+	logLevelConfig.Set(slog.LevelDebug)
+	slog.DebugContext(ctx, "Hello, Debug #2!") // now it will be printed as the default log level is debug
 }
