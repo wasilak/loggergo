@@ -51,7 +51,7 @@ var logLevel = new(slog.LevelVar)
 
 // The LoggerInit function initializes a logger with the provided configuration and additional
 // attributes.
-func LoggerInit(ctx context.Context, config Config, additionalAttrs ...any) (context.Context, *slog.Logger, error) {
+func Init(ctx context.Context, config Config, additionalAttrs ...any) (context.Context, *slog.Logger, error) {
 	var defaultHandler slog.Handler
 
 	err := mergo.Merge(&defaultConfig, config, mergo.WithOverride)

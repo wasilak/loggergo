@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestLoggerInit_SetAsDefault(t *testing.T) {
+func TestInit_SetAsDefault(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a buffer to capture log output
@@ -24,7 +24,7 @@ func TestLoggerInit_SetAsDefault(t *testing.T) {
 	}
 
 	// Initialize logger
-	ctx, _, err := LoggerInit(ctx, config)
+	ctx, _, err := Init(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -67,7 +67,7 @@ func TestLoggerInit_SetAsDefault(t *testing.T) {
 
 }
 
-func TestLoggerInit_SetAsLogLevelInfo(t *testing.T) {
+func TestInit_SetAsLogLevelInfo(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a buffer to capture log output
@@ -83,7 +83,7 @@ func TestLoggerInit_SetAsLogLevelInfo(t *testing.T) {
 	}
 
 	// Initialize logger
-	ctx, _, err := LoggerInit(ctx, config)
+	ctx, _, err := Init(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -156,7 +156,7 @@ func TestLoggerInit_SetAsLogLevelInfo(t *testing.T) {
 	}
 }
 
-func TestLoggerInit_SetAsLogLevelDebug(t *testing.T) {
+func TestInit_SetAsLogLevelDebug(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a buffer to capture log output
@@ -172,7 +172,7 @@ func TestLoggerInit_SetAsLogLevelDebug(t *testing.T) {
 	}
 
 	// Initialize logger
-	ctx, _, err := LoggerInit(ctx, config)
+	ctx, _, err := Init(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -230,7 +230,7 @@ func TestLoggerInit_SetAsLogLevelDebug(t *testing.T) {
 	}
 }
 
-func TestLoggerInit_SetAsDefault_PlainText(t *testing.T) {
+func TestInit_SetAsDefault_PlainText(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a buffer to capture log output
@@ -245,7 +245,7 @@ func TestLoggerInit_SetAsDefault_PlainText(t *testing.T) {
 	}
 
 	// Initialize logger
-	ctx, _, err := LoggerInit(ctx, config)
+	ctx, _, err := Init(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -285,7 +285,7 @@ func TestLoggerInit_SetAsDefault_PlainText(t *testing.T) {
 	}
 }
 
-func TestLoggerInit_SetAsDefault_OTEL(t *testing.T) {
+func TestInit_SetAsDefault_OTEL(t *testing.T) {
 	ctx := context.Background()
 
 	// Create a buffer to capture log output
@@ -300,7 +300,7 @@ func TestLoggerInit_SetAsDefault_OTEL(t *testing.T) {
 	}
 
 	// Initialize logger
-	ctx, _, err := LoggerInit(ctx, config)
+	ctx, _, err := Init(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
