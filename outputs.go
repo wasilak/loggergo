@@ -52,15 +52,15 @@ func consoleMode(defaultConfig Config, opts slog.HandlerOptions) (slog.Handler, 
 // otelMode returns a slog.Handler for OpenTelemetry mode based on the provided defaultConfig.
 // It initializes the otellogs package and returns a handler with the otelslog.WithLoggerProvider option.
 // Returns the handler and any error encountered.
-func otelMode(ctx context.Context, defaultConfig Config) (slog.Handler, error) {
+func otelMode(ctx context.Context, defaultConfig Config) (slog.Handler, context.Context, error) {
 	otelGoLogsConfig := otellogs.OtelGoLogsConfig{}
 
-	_, provider, err := otellogs.Init(ctx, otelGoLogsConfig)
+	ctx, provider, err := otellogs.Init(ctx, otelGoLogsConfig)
 	if err != nil {
-		return nil, err
+		return nil, ctx, err
 	}
 
-	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)), nil
+	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)), ctx, nil
 }
 
 // setupOtelFormat sets up a slog.Handler for OpenTelemetry format.

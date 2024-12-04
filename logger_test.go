@@ -24,7 +24,7 @@ func TestLoggerInit_SetAsDefault(t *testing.T) {
 	}
 
 	// Initialize logger
-	_, err := LoggerInit(ctx, config)
+	ctx, _, err := LoggerInit(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestLoggerInit_SetAsLogLevelInfo(t *testing.T) {
 	}
 
 	// Initialize logger
-	_, err := LoggerInit(ctx, config)
+	ctx, _, err := LoggerInit(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -172,7 +172,7 @@ func TestLoggerInit_SetAsLogLevelDebug(t *testing.T) {
 	}
 
 	// Initialize logger
-	_, err := LoggerInit(ctx, config)
+	ctx, _, err := LoggerInit(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -245,7 +245,7 @@ func TestLoggerInit_SetAsDefault_PlainText(t *testing.T) {
 	}
 
 	// Initialize logger
-	_, err := LoggerInit(ctx, config)
+	ctx, _, err := LoggerInit(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}
@@ -300,7 +300,7 @@ func TestLoggerInit_SetAsDefault_OTEL(t *testing.T) {
 	}
 
 	// Initialize logger
-	_, err := LoggerInit(ctx, config)
+	ctx, _, err := LoggerInit(ctx, config)
 	if err != nil {
 		t.Fatalf("Logger initialization failed: %v", err)
 	}

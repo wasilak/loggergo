@@ -17,13 +17,19 @@ func main() {
 	otelEnabled := flag.Bool("otel-enabled", false, "OpenTelemetry traces enabled")
 	flag.Parse()
 
+	ctx = context.WithValue(ctx, "test", "aaaaaaa")
+
 	loggerConfig := loggergo.Config{
 		Level:        loggergo.LogLevelFromString(*logLevel),
 		Format:       loggergo.LogFormatFromString(*logFormat),
 		OutputStream: os.Stdout,
 		DevMode:      *devMode,
 		Output:       loggergo.OutputConsole,
+		ContextKeys:  []string{"test", "test2", "test3"},
+		// ContextKeysDefault: "default",
 	}
+
+	ctx = context.WithValue(ctx, "test3", "bbbbbb")
 
 	if *otelEnabled {
 
@@ -34,13 +40,16 @@ func main() {
 	}
 
 	// this registers loggergo as slog.Default()
-	_, err := loggergo.LoggerInit(ctx, loggerConfig)
+	ctx, _, err := loggergo.LoggerInit(ctx, loggerConfig)
 	if err != nil {
 		slog.ErrorContext(ctx, err.Error())
 		os.Exit(1)
 	}
 
 	logLevelConfig := loggergo.GetLogLevelAccessor()
+
+	// every log below should be have fields test & test3 with values from abov, but not test2, as it is not in the context
+	// in case ContextKeysDefault: "default", test2 would have value "default"
 
 	slog.InfoContext(ctx, "Hello, World!")
 	slog.DebugContext(ctx, "Hello, Debug #1!") // will not be printed as the default log level is info
