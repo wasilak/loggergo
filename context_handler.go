@@ -2,18 +2,19 @@ package loggergo
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 )
 
 // CustomContextAttributeHandler wraps an existing handler and adds a custom attribute to all logs.
 type CustomContextAttributeHandler struct {
 	innerHandler       slog.Handler
-	keys               []string
+	keys               []interface{}
 	ContextKeysDefault interface{}
 }
 
 // NewCustomContextAttributeHandler creates a new handler that wraps the given handler and adds a custom attribute.
-func NewCustomContextAttributeHandler(handler slog.Handler, keys []string, contextKeysDefault interface{}) *CustomContextAttributeHandler {
+func NewCustomContextAttributeHandler(handler slog.Handler, keys []interface{}, contextKeysDefault interface{}) *CustomContextAttributeHandler {
 	return &CustomContextAttributeHandler{
 		innerHandler:       handler,
 		keys:               keys,
@@ -35,10 +36,10 @@ func (h *CustomContextAttributeHandler) Handle(ctx context.Context, record slog.
 
 		if val == nil {
 			if h.ContextKeysDefault != nil {
-				record.Add(slog.Any(key, h.ContextKeysDefault))
+				record.Add(slog.Any(fmt.Sprintf("%v", key), h.ContextKeysDefault))
 			}
 		} else {
-			record.Add(slog.Any(key, val))
+			record.Add(slog.Any(fmt.Sprintf("%v", key), val))
 		}
 	}
 

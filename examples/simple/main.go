@@ -9,6 +9,12 @@ import (
 	"github.com/wasilak/loggergo"
 )
 
+type contextKey string
+
+const testKey1 contextKey = "test1"
+const testKey2 contextKey = "test2"
+const testKey3 contextKey = "test3"
+
 func main() {
 	ctx := context.Background()
 	logLevel := flag.String("log-level", os.Getenv("LOG_LEVEL"), "log level (debug, info, warn, error, fatal)")
@@ -17,7 +23,7 @@ func main() {
 	otelEnabled := flag.Bool("otel-enabled", false, "OpenTelemetry traces enabled")
 	flag.Parse()
 
-	ctx = context.WithValue(ctx, "test", "aaaaaaa")
+	ctx = context.WithValue(ctx, testKey1, "aaaaaaa")
 
 	loggerConfig := loggergo.Config{
 		Level:        loggergo.LogLevelFromString(*logLevel),
@@ -25,7 +31,7 @@ func main() {
 		OutputStream: os.Stdout,
 		DevMode:      *devMode,
 		Output:       loggergo.OutputConsole,
-		ContextKeys:  []string{"test", "test2", "test3"},
+		ContextKeys:  []interface{}{testKey1, testKey2, testKey3},
 		// ContextKeysDefault: "default",
 	}
 
@@ -44,7 +50,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx = context.WithValue(ctx, "test3", "bbbbbb")
+	ctx = context.WithValue(ctx, testKey3, "bbbbbb")
 
 	logLevelConfig := loggergo.GetLogLevelAccessor()
 
