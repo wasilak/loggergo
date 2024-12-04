@@ -33,7 +33,7 @@ func (h *CustomContextAttributeHandler) Handle(ctx context.Context, record slog.
 
 	for _, key := range h.keys {
 
-		val := h.CTX.Value(key)
+		val := ctx.Value(key)
 
 		if val == nil {
 			if h.ContextKeysDefault != nil {

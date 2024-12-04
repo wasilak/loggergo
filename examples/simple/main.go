@@ -29,8 +29,6 @@ func main() {
 		// ContextKeysDefault: "default",
 	}
 
-	ctx = context.WithValue(ctx, "test3", "bbbbbb")
-
 	if *otelEnabled {
 
 		loggerConfig.OtelServiceName = os.Getenv("OTEL_SERVICE_NAME")
@@ -45,6 +43,8 @@ func main() {
 		slog.ErrorContext(ctx, err.Error())
 		os.Exit(1)
 	}
+
+	ctx = context.WithValue(ctx, "test3", "bbbbbb")
 
 	logLevelConfig := loggergo.GetLogLevelAccessor()
 
