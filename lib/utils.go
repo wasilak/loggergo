@@ -34,3 +34,16 @@ func LogLevelFromString(name string) slog.Level {
 		return slog.LevelInfo
 	}
 }
+
+func LogFormatFromString(name string) types.LogFormat {
+	switch strings.ToLower(name) {
+	case "text":
+		return types.LogFormatText
+	case "json":
+		return types.LogFormatJSON
+	case "otel":
+		return types.LogFormatOtel
+	default:
+		return types.LogFormatText
+	}
+}

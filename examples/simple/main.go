@@ -29,7 +29,7 @@ func main() {
 
 	loggerConfig := types.Config{
 		Level:        lib.LogLevelFromString(*logLevel),
-		Format:       types.LogFormatFromString(*logFormat),
+		Format:       lib.LogFormatFromString(*logFormat),
 		OutputStream: os.Stdout,
 		DevMode:      *devMode,
 		Output:       types.OutputConsole,

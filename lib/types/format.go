@@ -1,7 +1,5 @@
 package types
 
-import "strings"
-
 // LogFormat represents the format of the log.
 type LogFormat int
 
@@ -24,18 +22,5 @@ func (f LogFormat) String() string {
 		return "otel"
 	default:
 		return "unknown"
-	}
-}
-
-func LogFormatFromString(name string) LogFormat {
-	switch strings.ToLower(name) {
-	case "text":
-		return LogFormatText
-	case "json":
-		return LogFormatJSON
-	case "otel":
-		return LogFormatOtel
-	default:
-		return LogFormatText
 	}
 }
