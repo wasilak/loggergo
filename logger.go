@@ -96,7 +96,7 @@ func Init(ctx context.Context, config Config, additionalAttrs ...any) (context.C
 	}
 
 	// The code below is creating a new CustomContextAttributeHandler with the default handler and the context keys.
-	defaultHandler = NewCustomContextAttributeHandler(ctx, defaultHandler, defaultConfig.ContextKeys, defaultConfig.ContextKeysDefault)
+	defaultHandler = NewCustomContextAttributeHandler(defaultHandler, defaultConfig.ContextKeys, defaultConfig.ContextKeysDefault)
 
 	logger := slog.New(defaultHandler)
 
