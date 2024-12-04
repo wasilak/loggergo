@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/wasilak/loggergo"
+	"github.com/wasilak/loggergo/lib"
+	"github.com/wasilak/loggergo/lib/types"
 )
 
 type contextKey string
@@ -25,12 +27,12 @@ func main() {
 
 	ctx = context.WithValue(ctx, testKey1, "aaaaaaa")
 
-	loggerConfig := loggergo.Config{
-		Level:        loggergo.LogLevelFromString(*logLevel),
-		Format:       loggergo.LogFormatFromString(*logFormat),
+	loggerConfig := types.Config{
+		Level:        lib.LogLevelFromString(*logLevel),
+		Format:       types.LogFormatFromString(*logFormat),
 		OutputStream: os.Stdout,
 		DevMode:      *devMode,
-		Output:       loggergo.OutputConsole,
+		Output:       types.OutputConsole,
 		ContextKeys:  []interface{}{testKey1, testKey2, testKey3},
 		// ContextKeysDefault: "default",
 	}
@@ -38,7 +40,7 @@ func main() {
 	if *otelEnabled {
 
 		loggerConfig.OtelServiceName = os.Getenv("OTEL_SERVICE_NAME")
-		loggerConfig.Output = loggergo.OutputFanout
+		loggerConfig.Output = types.OutputFanout
 		loggerConfig.OtelLoggerName = "github.com/wasilak/loggergo" // your package name goes here
 		loggerConfig.OtelTracingEnabled = false
 	}

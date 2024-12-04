@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"log/slog"
 	"testing"
+
+	"github.com/wasilak/loggergo/lib/types"
 )
 
 func TestInit_SetAsDefault(t *testing.T) {
@@ -16,11 +18,11 @@ func TestInit_SetAsDefault(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Configure the logger to use the buffer
-	config := Config{
+	config := types.Config{
 		OutputStream: &buf,
-		Output:       OutputConsole,
+		Output:       types.OutputConsole,
 		SetAsDefault: true,
-		Format:       LogFormatJSON,
+		Format:       types.LogFormatJSON,
 	}
 
 	// Initialize logger
@@ -74,11 +76,11 @@ func TestInit_SetAsLogLevelInfo(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Configure the logger to use the buffer
-	config := Config{
+	config := types.Config{
 		OutputStream: &buf,
-		Output:       OutputConsole,
+		Output:       types.OutputConsole,
 		SetAsDefault: true,
-		Format:       LogFormatJSON,
+		Format:       types.LogFormatJSON,
 		Level:        slog.LevelInfo,
 	}
 
@@ -163,11 +165,11 @@ func TestInit_SetAsLogLevelDebug(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Configure the logger to use the buffer
-	config := Config{
+	config := types.Config{
 		OutputStream: &buf,
-		Output:       OutputConsole,
+		Output:       types.OutputConsole,
 		SetAsDefault: true,
-		Format:       LogFormatJSON,
+		Format:       types.LogFormatJSON,
 		Level:        slog.LevelDebug,
 	}
 
@@ -237,11 +239,11 @@ func TestInit_SetAsDefault_PlainText(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Configure the logger to use the buffer with plain text format
-	config := Config{
+	config := types.Config{
 		OutputStream: &buf,
-		Output:       OutputConsole,
+		Output:       types.OutputConsole,
 		SetAsDefault: true,
-		Format:       LogFormatText, // Use plain text format
+		Format:       types.LogFormatText, // Use plain text format
 	}
 
 	// Initialize logger
@@ -292,11 +294,11 @@ func TestInit_SetAsDefault_OTEL(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Configure the logger to use the buffer with plain text format
-	config := Config{
+	config := types.Config{
 		OutputStream: &buf,
-		Output:       OutputConsole,
+		Output:       types.OutputConsole,
 		SetAsDefault: true,
-		Format:       LogFormatOtel,
+		Format:       types.LogFormatOtel,
 	}
 
 	// Initialize logger
