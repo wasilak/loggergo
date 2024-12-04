@@ -54,7 +54,7 @@ func main() {
 
 	logLevelConfig := loggergo.GetLogLevelAccessor()
 
-	// every log below should be have fields test & test3 with values from abov, but not test2, as it is not in the context
+	// every log below should be have fields test & test3 with values from above, but not test2, as it is not in the context
 	// in case ContextKeysDefault: "default", test2 would have value "default"
 
 	slog.InfoContext(ctx, "Hello, World!")

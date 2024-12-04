@@ -14,10 +14,39 @@ import (
 	"gitlab.com/greyxor/slogor"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
+	otellog "go.opentelemetry.io/otel/log"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
+
+const sevOffset = slog.Level(otellog.SeverityDebug) - slog.LevelDebug
+
+// Custom processor to filter logs by level
+type levelFilterProcessor struct {
+	minLevel  slog.Level
+	processor log.Processor
+}
+
+// OnEmit filters log records by level and delegates to the wrapped processor
+func (p *levelFilterProcessor) OnEmit(ctx context.Context, record *log.Record) error {
+	sev := slog.Level(record.Severity()) - sevOffset
+
+	if sev >= p.minLevel {
+		return p.processor.OnEmit(ctx, record)
+	}
+	return nil // Ignore logs below the minimum level
+}
+
+// Shutdown cleans up resources used by the processor
+func (p *levelFilterProcessor) Shutdown(ctx context.Context) error {
+	return p.processor.Shutdown(ctx)
+}
+
+// ForceFlush ensures all pending records are flushed
+func (p *levelFilterProcessor) ForceFlush(ctx context.Context) error {
+	return p.processor.ForceFlush(ctx)
+}
 
 // consoleMode returns a slog.Handler based on the provided defaultConfig and opts.
 // It checks the defaultConfig.Format and sets up the appropriate handler based on the format.
@@ -84,10 +113,20 @@ func setupOtelFormat(defaultConfig Config) (slog.Handler, error) {
 		return nil, err
 	}
 
-	processor := log.NewSimpleProcessor(exporter)
+	// Wrap the exporter with a simple processor
+	baseProcessor := log.NewSimpleProcessor(exporter)
+
+	// Wrap the processor with a level filter
+	filteredProcessor := &levelFilterProcessor{
+		minLevel:  defaultConfig.Level.Level(),
+		processor: baseProcessor,
+	}
+
+	// processor := log.NewSimpleProcessor(exporter)
 	stdoutProvider := log.NewLoggerProvider(
 		log.WithResource(resource),
-		log.WithProcessor(processor),
+		// log.WithProcessor(processor),
+		log.WithProcessor(filteredProcessor),
 	)
 
 	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(stdoutProvider)), nil
