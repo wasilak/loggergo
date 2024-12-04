@@ -2,7 +2,7 @@ module github.com/wasilak/loggergo
 
 go 1.23
 
-toolchain go1.23.3
+toolchain go1.23.4
 
 require (
 	dario.cat/mergo v1.0.1
