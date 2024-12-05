@@ -31,7 +31,3 @@ https://github.com/wasilak/loggergo/blob/main/examples/simple/main.go
 ## Contributing
 
 Contributions are welcome! Please fork the repository, make changes, and submit a pull request.
-
----
-
-Feel free to adjust the example to better match the specific functionality of your library.
