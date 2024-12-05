@@ -26,7 +26,7 @@ go get github.com/wasilak/loggergo
 
 Here's a basic example of how to use LoggerGo:
 
-https://github.com/wasilak/loggergo/blob/main/examples/simple/main.go
+<https://github.com/wasilak/loggergo/blob/main/examples/simple/main.go>
 
 ## Contributing
 
