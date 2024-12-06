@@ -4,13 +4,13 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/wasilak/loggergo/lib/types"
+	loggergoTypes "github.com/wasilak/loggergo/lib/types"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	otellog "go.opentelemetry.io/otel/log"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.27.0"
 )
 
 const sevOffset = slog.Level(otellog.SeverityDebug) - slog.LevelDebug
@@ -45,7 +45,7 @@ func (p *levelFilterProcessor) ForceFlush(ctx context.Context) error {
 // It merges the default resource with the service name attribute, creates a stdoutlog exporter,
 // and sets up a log processor and logger provider with the merged resource and exporter.
 // Returns the handler and any error encountered.
-func SetupOtelFormat(defaultConfig types.Config) (slog.Handler, error) {
+func SetupOtelFormat(defaultConfig loggergoTypes.Config) (slog.Handler, error) {
 	resource, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
