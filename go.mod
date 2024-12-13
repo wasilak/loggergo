@@ -14,10 +14,10 @@ require (
 	gitlab.com/greyxor/slogor v1.5.2
 	go.opentelemetry.io/contrib/bridges/otelslog v0.8.0
 	go.opentelemetry.io/otel v1.33.0
-	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.8.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.9.0
 	go.opentelemetry.io/otel/log v0.9.0
-	go.opentelemetry.io/otel/sdk v1.32.0
-	go.opentelemetry.io/otel/sdk/log v0.8.0
+	go.opentelemetry.io/otel/sdk v1.33.0
+	go.opentelemetry.io/otel/sdk/log v0.9.0
 )
 
 require (
