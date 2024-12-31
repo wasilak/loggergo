@@ -9,7 +9,7 @@ require (
 	github.com/golang-cz/devslog v0.0.11
 	github.com/lmittmann/tint v1.0.6
 	github.com/mattn/go-isatty v0.0.20
-	github.com/samber/slog-multi v1.2.4
+	github.com/samber/slog-multi v1.3.1
 	github.com/wasilak/otelgo v1.2.3
 	gitlab.com/greyxor/slogor v1.5.2
 	go.opentelemetry.io/contrib/bridges/otelslog v0.8.0
