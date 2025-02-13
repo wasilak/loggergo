@@ -1,6 +1,6 @@
 module github.com/wasilak/loggergo
 
-go 1.23
+go 1.24
 
 toolchain go1.24.0
 
@@ -10,7 +10,7 @@ require (
 	github.com/lmittmann/tint v1.0.7
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.4.0
-	github.com/wasilak/otelgo v1.2.3
+	github.com/wasilak/otelgo v1.2.4
 	gitlab.com/greyxor/slogor v1.6.1
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
 	go.opentelemetry.io/otel v1.34.0
@@ -25,7 +25,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.25.1 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
 	github.com/samber/lo v1.49.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.10.0 // indirect
@@ -33,11 +33,11 @@ require (
 	go.opentelemetry.io/otel/metric v1.34.0 // indirect
 	go.opentelemetry.io/otel/trace v1.34.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
-	google.golang.org/grpc v1.69.4 // indirect
-	google.golang.org/protobuf v1.36.3 // indirect
+	golang.org/x/net v0.35.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250212204824-5a70512c5d8b // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250212204824-5a70512c5d8b // indirect
+	google.golang.org/grpc v1.70.0 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 )
