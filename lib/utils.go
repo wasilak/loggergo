@@ -2,48 +2,26 @@ package lib
 
 import (
 	"log/slog"
-	"strings"
 
 	"github.com/wasilak/loggergo/lib/types"
 )
 
+// deprecated: use types.DevFlavorFromString instead
 func DevFlavorFromString(name string) types.DevFlavor {
-	switch strings.ToLower(name) {
-	case "tint":
-		return types.DevFlavorTint
-	case "slogor":
-		return types.DevFlavorSlogor
-	case "devslog":
-		return types.DevFlavorDevslog
-	default:
-		return types.DevFlavorTint
-	}
+	return types.DevFlavorFromString(name)
 }
 
+// deprecated: use types.AllDevFlavors instead
 func LogLevelFromString(name string) slog.Level {
-	switch strings.ToLower(name) {
-	case "debug":
-		return slog.LevelDebug
-	case "info":
-		return slog.LevelInfo
-	case "warn":
-		return slog.LevelWarn
-	case "error":
-		return slog.LevelError
-	default:
-		return slog.LevelInfo
-	}
+	return types.LogLevelFromString(name)
 }
 
+// deprecated: use types.LogFormatFromString instead
 func LogFormatFromString(name string) types.LogFormat {
-	switch strings.ToLower(name) {
-	case "text":
-		return types.LogFormatText
-	case "json":
-		return types.LogFormatJSON
-	case "otel":
-		return types.LogFormatOtel
-	default:
-		return types.LogFormatText
-	}
+	return types.LogFormatFromString(name)
+}
+
+// deprecated: use types.OutputTypeFromString instead
+func OutputTypeFromString(name string) types.OutputType {
+	return types.OutputTypeFromString(name)
 }

@@ -34,6 +34,9 @@ var defaultConfig = types.Config{
 
 var logLevel = new(slog.LevelVar)
 
+// expose the types for external usage
+type Config = types.Config
+
 // The LoggerInit function initializes a logger with the provided configuration and additional
 // attributes.
 func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (context.Context, *slog.Logger, error) {

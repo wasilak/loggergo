@@ -1,26 +1,34 @@
 package types
 
-// DevFlavor represents the flavor of the development environment.
-type DevFlavor int
+import (
+	"fmt"
+	"log/slog"
 
-const (
-	// DevFlavorTint represents the "tint" development flavor.
-	DevFlavorTint DevFlavor = iota
-	// DevFlavorSlogor represents the "slogor" development flavor.
-	DevFlavorSlogor
-	// DevFlavorDevslog represents the production "devslog" flavor.
-	DevFlavorDevslog
+	"github.com/xybor-x/enum"
 )
 
-func (f DevFlavor) String() string {
-	switch f {
-	case DevFlavorTint:
-		return "tint"
-	case DevFlavorSlogor:
-		return "slogor"
-	case DevFlavorDevslog:
-		return "devslog"
-	default:
-		return "unknown"
+// DevFlavor represents the flavor of the development environment.
+type devFlavor int
+type DevFlavor struct{ enum.SafeEnum[devFlavor] }
+
+var (
+	DevFlavorTint    = enum.NewExtended[DevFlavor]("tint")
+	DevFlavorSlogor  = enum.NewExtended[DevFlavor]("slogor")
+	DevFlavorDevslog = enum.NewExtended[DevFlavor]("devslog")
+
+	_ = enum.Finalize[DevFlavor]() // still required internally
+)
+
+// AllDevFlavors returns all defined DevFlavor values.
+func AllDevFlavors() []DevFlavor {
+	return enum.All[DevFlavor]()
+}
+
+// DevFlavorFromString parses a string to a DevFlavor, returning a fallback if not found.
+func DevFlavorFromString(name string) DevFlavor {
+	if v, ok := enum.FromString[DevFlavor](name); ok {
+		return v
 	}
+	slog.Warn(fmt.Sprintf("Invalid dev flavor: %q, defaulting to %s", name, DevFlavorTint))
+	return DevFlavorTint
 }

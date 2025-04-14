@@ -1,39 +1,33 @@
 package types
 
-// OutputType represents the type of output for the logger.
-type OutputType int
+import (
+	"log/slog"
 
-const (
-	// OutputConsole represents console output.
-	OutputConsole OutputType = iota
-	// OutputOtel represents otel output.
-	OutputOtel
-	// OutputFanout represents both console and otel output.
-	OutputFanout
+	"github.com/xybor-x/enum"
 )
 
-func (o OutputType) String() string {
-	switch o {
-	case OutputConsole:
-		return "console"
-	case OutputOtel:
-		return "otel"
-	case OutputFanout:
-		return "fanout"
-	default:
-		return "unknown"
-	}
+// OutputType represents the type of output for the logger.
+type outputType int
+type OutputType struct{ enum.SafeEnum[outputType] }
+
+var (
+	// OutputConsole represents console output.
+	OutputConsole = enum.NewExtended[OutputType]("console")
+	// OutputOtel represents otel output.
+	OutputOtel = enum.NewExtended[OutputType]("otel")
+	// OutputFanout represents both console and otel output.
+	OutputFanout = enum.NewExtended[OutputType]("fanout")
+	_            = enum.Finalize[OutputType]() // still required internally
+)
+
+func AllOutputTypes() []OutputType {
+	return enum.All[OutputType]()
 }
 
 func OutputTypeFromString(name string) OutputType {
-	switch name {
-	case "console":
-		return OutputConsole
-	case "otel":
-		return OutputOtel
-	case "fanout":
-		return OutputFanout
-	default:
-		return OutputConsole
+	if v, ok := enum.FromString[OutputType](name); ok {
+		return v
 	}
+	slog.Warn("Invalid output type: %q, defaulting to %s", name, OutputConsole)
+	return OutputConsole
 }
