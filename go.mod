@@ -6,7 +6,7 @@ toolchain go1.24.2
 
 require (
 	dario.cat/mergo v1.0.1
-	github.com/golang-cz/devslog v0.0.12
+	github.com/golang-cz/devslog v0.0.13
 	github.com/lmittmann/tint v1.0.7
 	github.com/mattn/go-isatty v0.0.20
 	github.com/samber/slog-multi v1.4.0
