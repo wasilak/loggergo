@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.3
 
 require (
-	dario.cat/mergo v1.0.1
+	dario.cat/mergo v1.0.2
 	github.com/golang-cz/devslog v0.0.13
 	github.com/lmittmann/tint v1.0.7
 	github.com/mattn/go-isatty v0.0.20
