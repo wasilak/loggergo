@@ -44,14 +44,14 @@ func MergeConfig(def, override types.Config) types.Config {
 	}
 
 	// If defaults are set, use them
-	if def.Format.String() != "" {
-		result.Format = def.Format
+	if override.Format.String() != "" {
+		result.Format = override.Format
 	}
-	if def.DevFlavor.String() != "" {
-		result.DevFlavor = def.DevFlavor
+	if override.DevFlavor.String() != "" {
+		result.DevFlavor = override.DevFlavor
 	}
-	if def.Output.String() != "" {
-		result.Output = def.Output
+	if override.Output.String() != "" {
+		result.Output = override.Output
 	}
 
 	// Only override non-zero values from override config
