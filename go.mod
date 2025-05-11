@@ -2,8 +2,6 @@ module github.com/wasilak/loggergo
 
 go 1.24
 
-toolchain go1.24.3
-
 require (
 	github.com/golang-cz/devslog v0.0.13
 	github.com/lmittmann/tint v1.0.7
