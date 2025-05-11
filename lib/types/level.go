@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"log/slog"
 )
 
@@ -8,7 +9,7 @@ func LogLevelFromString(name string) slog.Level {
 	var level slog.Level
 	err := level.UnmarshalText([]byte(name))
 	if err != nil {
-		slog.Warn("Invalid log level: %q, defaulting to %s", name, slog.LevelInfo)
+		slog.Warn(fmt.Sprintf("Unknown log level: %q, defaulting to %s", name, slog.LevelInfo))
 		return slog.LevelInfo
 	}
 	return level

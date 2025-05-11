@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/xybor-x/enum"
@@ -28,6 +29,6 @@ func OutputTypeFromString(name string) OutputType {
 	if v, ok := enum.FromString[OutputType](name); ok {
 		return v
 	}
-	slog.Warn("Invalid output type: %q, defaulting to %s", name, OutputConsole)
+	slog.Warn(fmt.Sprintf("Unknown output type: %q, defaulting to %s", name, OutputConsole))
 	return OutputConsole
 }

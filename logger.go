@@ -12,7 +12,7 @@ import (
 
 	slogmulti "github.com/samber/slog-multi"
 
-	"dario.cat/mergo"
+	"github.com/wasilak/loggergo/lib"
 	"github.com/wasilak/loggergo/lib/modes"
 	"github.com/wasilak/loggergo/lib/types"
 )
@@ -41,36 +41,34 @@ type Config = types.Config
 // attributes.
 func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (context.Context, *slog.Logger, error) {
 	var defaultHandler slog.Handler
+	var err error
 
-	err := mergo.Merge(&defaultConfig, config, mergo.WithOverride)
-	if err != nil {
-		return ctx, nil, err
-	}
+	localConfig := lib.MergeConfig(defaultConfig, config)
 
-	logLevel.Set(defaultConfig.Level.Level())
+	logLevel.Set(localConfig.Level.Level())
 
 	opts := slog.HandlerOptions{
 		Level:     logLevel,
-		AddSource: defaultConfig.Level == slog.LevelDebug,
+		AddSource: localConfig.Level == slog.LevelDebug,
 	}
 
-	switch defaultConfig.Output {
+	switch localConfig.Output {
 	case types.OutputConsole:
-		defaultHandler, err = modes.ConsoleMode(defaultConfig, opts)
+		defaultHandler, err = modes.ConsoleMode(localConfig, opts)
 		if err != nil {
 			return ctx, nil, err
 		}
 	case types.OutputOtel:
-		defaultHandler, ctx, err = modes.OtelMode(ctx, defaultConfig)
+		defaultHandler, ctx, err = modes.OtelMode(ctx, localConfig)
 		if err != nil {
 			return ctx, nil, err
 		}
 	case types.OutputFanout:
-		consoleModeHandler, err := modes.ConsoleMode(defaultConfig, opts)
+		consoleModeHandler, err := modes.ConsoleMode(localConfig, opts)
 		if err != nil {
 			return ctx, nil, err
 		}
-		otelModeHandler, ctx, err := modes.OtelMode(ctx, defaultConfig)
+		otelModeHandler, ctx, err := modes.OtelMode(ctx, localConfig)
 		if err != nil {
 			return ctx, nil, err
 		}
@@ -80,11 +78,11 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 			otelModeHandler,
 		)
 	default:
-		return ctx, nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", defaultConfig.Output)
+		return ctx, nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", localConfig.Output)
 	}
 
 	// The code below is creating a new CustomContextAttributeHandler with the default handler and the context keys.
-	defaultHandler = NewCustomContextAttributeHandler(defaultHandler, defaultConfig.ContextKeys, defaultConfig.ContextKeysDefault)
+	defaultHandler = NewCustomContextAttributeHandler(defaultHandler, localConfig.ContextKeys, localConfig.ContextKeysDefault)
 
 	logger := slog.New(defaultHandler)
 
@@ -94,7 +92,7 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 		logger.With(v)
 	}
 
-	if defaultConfig.SetAsDefault {
+	if localConfig.SetAsDefault {
 		// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
 		slog.SetDefault(logger)
 	}

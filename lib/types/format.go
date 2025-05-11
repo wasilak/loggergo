@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/xybor-x/enum"
@@ -29,6 +30,6 @@ func LogFormatFromString(name string) LogFormat {
 	if v, ok := enum.FromString[LogFormat](name); ok {
 		return v
 	}
-	slog.Warn("Invalid log format: %q, defaulting to %s", name, LogFormatText)
+	slog.Warn(fmt.Sprintf("Unknown log format: %q, defaulting to %s", name, LogFormatText))
 	return LogFormatText
 }

@@ -29,6 +29,6 @@ func DevFlavorFromString(name string) DevFlavor {
 	if v, ok := enum.FromString[DevFlavor](name); ok {
 		return v
 	}
-	slog.Warn(fmt.Sprintf("Invalid dev flavor: %q, defaulting to %s", name, DevFlavorTint))
+	slog.Warn(fmt.Sprintf("Unknown dev flavor: %q, defaulting to %s", name, DevFlavorTint))
 	return DevFlavorTint
 }
