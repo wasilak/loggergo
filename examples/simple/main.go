@@ -38,7 +38,6 @@ func main() {
 	}
 
 	if *otelEnabled {
-
 		loggerConfig.OtelServiceName = os.Getenv("OTEL_SERVICE_NAME")
 		loggerConfig.Output = types.OutputFanout
 		loggerConfig.OtelLoggerName = "github.com/wasilak/loggergo" // your package name goes here

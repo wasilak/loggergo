@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	loggergoTypes "github.com/wasilak/loggergo/lib/types"
+	"github.com/wasilak/loggergo/lib"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	otellog "go.opentelemetry.io/otel/log"
@@ -45,12 +45,12 @@ func (p *levelFilterProcessor) ForceFlush(ctx context.Context) error {
 // It merges the default resource with the service name attribute, creates a stdoutlog exporter,
 // and sets up a log processor and logger provider with the merged resource and exporter.
 // Returns the handler and any error encountered.
-func SetupOtelFormat(defaultConfig loggergoTypes.Config) (slog.Handler, error) {
+func SetupOtelFormat() (slog.Handler, error) {
 	resource, err := resource.Merge(
 		resource.Default(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceName(defaultConfig.OtelServiceName),
+			semconv.ServiceName(lib.GetConfig().OtelServiceName),
 		),
 	)
 	if err != nil {
@@ -67,7 +67,7 @@ func SetupOtelFormat(defaultConfig loggergoTypes.Config) (slog.Handler, error) {
 
 	// Wrap the processor with a level filter
 	filteredProcessor := &levelFilterProcessor{
-		minLevel:  defaultConfig.Level.Level(),
+		minLevel:  lib.GetConfig().Level.Level(),
 		processor: baseProcessor,
 	}
 
@@ -78,5 +78,5 @@ func SetupOtelFormat(defaultConfig loggergoTypes.Config) (slog.Handler, error) {
 		log.WithProcessor(filteredProcessor),
 	)
 
-	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(stdoutProvider)), nil
+	return otelslog.NewHandler(lib.GetConfig().OtelLoggerName, otelslog.WithLoggerProvider(stdoutProvider)), nil
 }

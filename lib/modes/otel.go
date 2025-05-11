@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	"github.com/wasilak/loggergo/lib/types"
+	"github.com/wasilak/loggergo/lib"
 	otellogs "github.com/wasilak/otelgo/logs"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
 )
@@ -12,7 +12,7 @@ import (
 // otelMode returns a slog.Handler for OpenTelemetry mode based on the provided defaultConfig.
 // It initializes the otellogs package and returns a handler with the otelslog.WithLoggerProvider option.
 // Returns the handler and any error encountered.
-func OtelMode(ctx context.Context, defaultConfig types.Config) (slog.Handler, context.Context, error) {
+func OtelMode(ctx context.Context) (slog.Handler, context.Context, error) {
 	otelGoLogsConfig := otellogs.OtelGoLogsConfig{}
 
 	ctx, provider, err := otellogs.Init(ctx, otelGoLogsConfig)
@@ -20,5 +20,5 @@ func OtelMode(ctx context.Context, defaultConfig types.Config) (slog.Handler, co
 		return nil, ctx, err
 	}
 
-	return otelslog.NewHandler(defaultConfig.OtelLoggerName, otelslog.WithLoggerProvider(provider)), ctx, nil
+	return otelslog.NewHandler(lib.GetConfig().OtelLoggerName, otelslog.WithLoggerProvider(provider)), ctx, nil
 }

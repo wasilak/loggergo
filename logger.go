@@ -6,7 +6,6 @@ package loggergo
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"log/slog"
 
@@ -16,21 +15,6 @@ import (
 	"github.com/wasilak/loggergo/lib/modes"
 	"github.com/wasilak/loggergo/lib/types"
 )
-
-var defaultConfig = types.Config{
-	Level:              slog.LevelInfo,
-	Format:             types.LogFormatJSON,
-	DevMode:            false,
-	DevFlavor:          types.DevFlavorTint,
-	OutputStream:       os.Stdout,
-	OtelTracingEnabled: true,
-	OtelLoggerName:     "my/pkg/name",
-	Output:             types.OutputConsole,
-	OtelServiceName:    "my-service",
-	SetAsDefault:       true,
-	ContextKeys:        []interface{}{},
-	ContextKeysDefault: nil,
-}
 
 var logLevel = new(slog.LevelVar)
 
@@ -43,32 +27,33 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 	var defaultHandler slog.Handler
 	var err error
 
-	localConfig := lib.MergeConfig(defaultConfig, config)
+	lib.InitConfig()
+	lib.MergeConfig(config)
 
-	logLevel.Set(localConfig.Level.Level())
+	logLevel.Set(lib.GetConfig().Level.Level())
 
 	opts := slog.HandlerOptions{
 		Level:     logLevel,
-		AddSource: localConfig.Level == slog.LevelDebug,
+		AddSource: lib.GetConfig().Level == slog.LevelDebug,
 	}
 
-	switch localConfig.Output {
+	switch lib.GetConfig().Output {
 	case types.OutputConsole:
-		defaultHandler, err = modes.ConsoleMode(localConfig, opts)
+		defaultHandler, err = modes.ConsoleMode(opts)
 		if err != nil {
 			return ctx, nil, err
 		}
 	case types.OutputOtel:
-		defaultHandler, ctx, err = modes.OtelMode(ctx, localConfig)
+		defaultHandler, ctx, err = modes.OtelMode(ctx)
 		if err != nil {
 			return ctx, nil, err
 		}
 	case types.OutputFanout:
-		consoleModeHandler, err := modes.ConsoleMode(localConfig, opts)
+		consoleModeHandler, err := modes.ConsoleMode(opts)
 		if err != nil {
 			return ctx, nil, err
 		}
-		otelModeHandler, ctx, err := modes.OtelMode(ctx, localConfig)
+		otelModeHandler, ctx, err := modes.OtelMode(ctx)
 		if err != nil {
 			return ctx, nil, err
 		}
@@ -78,11 +63,11 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 			otelModeHandler,
 		)
 	default:
-		return ctx, nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", localConfig.Output)
+		return ctx, nil, fmt.Errorf("invalid mode: %s. Valid options: [loggergo.OutputConsole, loggergo.OutputOtel, loggergo.OutputFanout] ", lib.GetConfig().Output)
 	}
 
 	// The code below is creating a new CustomContextAttributeHandler with the default handler and the context keys.
-	defaultHandler = NewCustomContextAttributeHandler(defaultHandler, localConfig.ContextKeys, localConfig.ContextKeysDefault)
+	defaultHandler = NewCustomContextAttributeHandler(defaultHandler, lib.GetConfig().ContextKeys, lib.GetConfig().ContextKeysDefault)
 
 	logger := slog.New(defaultHandler)
 
@@ -92,7 +77,7 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 		logger.With(v)
 	}
 
-	if localConfig.SetAsDefault {
+	if lib.GetConfig().SetAsDefault {
 		// The code `slog.SetDefault(logger)` is setting the default logger to the newly created logger.
 		slog.SetDefault(logger)
 	}

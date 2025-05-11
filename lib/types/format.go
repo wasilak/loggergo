@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/xybor-x/enum"
 )
@@ -27,6 +28,9 @@ func AllLogFormats() []LogFormat {
 }
 
 func LogFormatFromString(name string) LogFormat {
+	if strings.ToLower(name) == "plain" {
+		name = "text"
+	}
 	if v, ok := enum.FromString[LogFormat](name); ok {
 		return v
 	}
