@@ -32,20 +32,6 @@ func GetConfig() *types.Config {
 
 func MergeConfig(override types.Config) types.Config {
 	libConfig := GetConfig()
-	// libConfig := types.Config{
-	// 	Level:              libConfig.Level,
-	// 	Format:             libConfig.Format,
-	// 	DevMode:            libConfig.DevMode,
-	// 	DevFlavor:          libConfig.DevFlavor,
-	// 	OutputStream:       libConfig.OutputStream,
-	// 	OtelTracingEnabled: libConfig.OtelTracingEnabled,
-	// 	OtelLoggerName:     libConfig.OtelLoggerName,
-	// 	Output:             libConfig.Output,
-	// 	OtelServiceName:    libConfig.OtelServiceName,
-	// 	SetAsDefault:       libConfig.SetAsDefault,
-	// 	ContextKeys:        libConfig.ContextKeys,
-	// 	ContextKeysDefault: libConfig.ContextKeysDefault,
-	// }
 
 	if libConfig.Format != (types.LogFormat{}) {
 		libConfig.Format = override.Format
@@ -68,13 +54,13 @@ func MergeConfig(override types.Config) types.Config {
 	if override.OtelServiceName != "" {
 		libConfig.OtelServiceName = override.OtelServiceName
 	}
-	if override.DevMode {
+	if override.DevMode && override.DevMode != libConfig.DevMode {
 		libConfig.DevMode = override.DevMode
 	}
-	if override.OtelTracingEnabled {
+	if override.OtelTracingEnabled && override.OtelTracingEnabled != libConfig.OtelTracingEnabled {
 		libConfig.OtelTracingEnabled = override.OtelTracingEnabled
 	}
-	if override.SetAsDefault {
+	if override.SetAsDefault && override.SetAsDefault != libConfig.SetAsDefault {
 		libConfig.SetAsDefault = override.SetAsDefault
 	}
 	if len(override.ContextKeys) > 0 {
