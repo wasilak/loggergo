@@ -10,7 +10,7 @@ require (
 	github.com/wasilak/otelgo v1.2.6
 	github.com/xybor-x/enum v1.4.0
 	gitlab.com/greyxor/slogor v1.6.2
-	go.opentelemetry.io/contrib/bridges/otelslog v0.10.0
+	go.opentelemetry.io/contrib/bridges/otelslog v0.11.0
 	go.opentelemetry.io/otel v1.36.0
 	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.12.2
 	go.opentelemetry.io/otel/log v0.12.2
