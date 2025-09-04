@@ -6,7 +6,7 @@ require (
 	github.com/golang-cz/devslog v0.0.15
 	github.com/lmittmann/tint v1.1.2
 	github.com/mattn/go-isatty v0.0.20
-	github.com/samber/slog-multi v1.4.1
+	github.com/samber/slog-multi v1.5.0
 	github.com/wasilak/otelgo v1.2.6
 	github.com/xybor-x/enum v1.4.0
 	gitlab.com/greyxor/slogor v1.6.2
