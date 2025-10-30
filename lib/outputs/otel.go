@@ -6,11 +6,11 @@ import (
 
 	"github.com/wasilak/loggergo/lib"
 	"go.opentelemetry.io/contrib/bridges/otelslog"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/exporters/stdout/stdoutlog"
 	otellog "go.opentelemetry.io/otel/log"
 	"go.opentelemetry.io/otel/sdk/log"
 	"go.opentelemetry.io/otel/sdk/resource"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 )
 
 const sevOffset = slog.Level(otellog.SeverityDebug) - slog.LevelDebug
@@ -46,12 +46,16 @@ func (p *levelFilterProcessor) ForceFlush(ctx context.Context) error {
 // and sets up a log processor and logger provider with the merged resource and exporter.
 // Returns the handler and any error encountered.
 func SetupOtelFormat() (slog.Handler, error) {
-	resource, err := resource.Merge(
-		resource.Default(),
-		resource.NewWithAttributes(
-			semconv.SchemaURL,
-			semconv.ServiceName(lib.GetConfig().OtelServiceName),
-		),
+	defaultResource := resource.Default()
+
+	serviceResource := resource.NewWithAttributes(
+		defaultResource.SchemaURL(),
+		attribute.String("service.name", lib.GetConfig().OtelServiceName),
+	)
+
+	mergedResource, err := resource.Merge(
+		defaultResource,
+		serviceResource,
 	)
 	if err != nil {
 		return nil, err
@@ -73,7 +77,7 @@ func SetupOtelFormat() (slog.Handler, error) {
 
 	// processor := log.NewSimpleProcessor(exporter)
 	stdoutProvider := log.NewLoggerProvider(
-		log.WithResource(resource),
+		log.WithResource(mergedResource),
 		// log.WithProcessor(processor),
 		log.WithProcessor(filteredProcessor),
 	)
