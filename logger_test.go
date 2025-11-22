@@ -341,3 +341,46 @@ func TestInit_SetAsDefault_OTEL(t *testing.T) {
 		}
 	}
 }
+
+// TestInit_ValidationIntegration tests that Init calls Validate and handles errors
+// Note: Due to config merging with defaults, most validation errors won't occur in practice
+// The real validation tests are in lib/types/config_test.go
+func TestInit_ValidationIntegration(t *testing.T) {
+	ctx := context.Background()
+
+	var buf bytes.Buffer
+	config := types.Config{
+		Level:        slog.LevelInfo,
+		Output:       types.OutputConsole,
+		OutputStream: &buf,
+		Format:       types.LogFormatJSON,
+	}
+
+	_, logger, err := Init(ctx, config)
+	if err != nil {
+		t.Fatalf("Expected Init to succeed with valid config, but got error: %v", err)
+	}
+
+	if logger == nil {
+		t.Fatal("Expected logger to be non-nil")
+	}
+	
+	// Verify that validation is called by checking that a config with ContextKeysDefault
+	// but no ContextKeys fails validation
+	configWithError := types.Config{
+		Level:              slog.LevelInfo,
+		Output:             types.OutputConsole,
+		OutputStream:       &buf,
+		ContextKeysDefault: "default-value",
+		ContextKeys:        []interface{}{}, // Empty - should cause validation error
+	}
+
+	_, _, err = Init(ctx, configWithError)
+	if err == nil {
+		t.Fatal("Expected validation error for ContextKeysDefault without ContextKeys, but got nil")
+	}
+
+	if !bytes.Contains([]byte(err.Error()), []byte("validation")) {
+		t.Errorf("Expected validation error message, but got: %v", err)
+	}
+}

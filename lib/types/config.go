@@ -1,9 +1,42 @@
 package types
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 )
+
+// ValidationError represents configuration validation failures.
+type ValidationError struct {
+	Errors []FieldError
+}
+
+// Error implements the error interface for ValidationError.
+func (e *ValidationError) Error() string {
+	if len(e.Errors) == 0 {
+		return "configuration validation failed"
+	}
+	if len(e.Errors) == 1 {
+		return fmt.Sprintf("configuration validation failed: %s", e.Errors[0].Error())
+	}
+	return fmt.Sprintf("configuration validation failed with %d errors: %s (and %d more)", 
+		len(e.Errors), e.Errors[0].Error(), len(e.Errors)-1)
+}
+
+// FieldError represents a single field validation failure.
+type FieldError struct {
+	Field  string
+	Value  interface{}
+	Reason string
+}
+
+// Error implements the error interface for FieldError.
+func (e *FieldError) Error() string {
+	if e.Value != nil {
+		return fmt.Sprintf("field %q with value %v: %s", e.Field, e.Value, e.Reason)
+	}
+	return fmt.Sprintf("field %q: %s", e.Field, e.Reason)
+}
 
 // Config represents the configuration options for the LoggerGo logger.
 type Config struct {
@@ -19,4 +52,61 @@ type Config struct {
 	SetAsDefault       bool          `json:"set_as_default"`       // SetAsDefault specifies whether the logger should be set as the default logger.
 	ContextKeys        []interface{} `json:"context_keys"`         // ContextKeys specifies the keys to be added to log from context.
 	ContextKeysDefault interface{}   `json:"context_keys_default"` // ContextKeysDefault specifies the default value for the context keys if not found in the context.
+}
+
+// Validate checks if the configuration is valid and returns an error if not.
+// It validates required fields, field conflicts, and mode-specific requirements.
+func (c *Config) Validate() error {
+	var fieldErrors []FieldError
+
+	// Validate level
+	if c.Level == nil {
+		fieldErrors = append(fieldErrors, FieldError{
+			Field:  "Level",
+			Value:  nil,
+			Reason: "cannot be nil",
+		})
+	}
+
+	// Validate output mode
+	if c.Output == (OutputType{}) {
+		fieldErrors = append(fieldErrors, FieldError{
+			Field:  "Output",
+			Value:  c.Output,
+			Reason: "must be specified (Console, OTEL, or Fanout)",
+		})
+	}
+
+	// Validate OTEL-specific fields - only check for missing required fields
+	if c.Output.String() == OutputOtel.String() || c.Output.String() == OutputFanout.String() {
+		if c.OtelLoggerName == "" {
+			fieldErrors = append(fieldErrors, FieldError{
+				Field:  "OtelLoggerName",
+				Value:  c.OtelLoggerName,
+				Reason: "required when Output is OTEL or Fanout",
+			})
+		}
+		if c.OtelServiceName == "" {
+			fieldErrors = append(fieldErrors, FieldError{
+				Field:  "OtelServiceName",
+				Value:  c.OtelServiceName,
+				Reason: "required when Output is OTEL or Fanout",
+			})
+		}
+	}
+
+	// Validate context keys
+	if c.ContextKeysDefault != nil && len(c.ContextKeys) == 0 {
+		fieldErrors = append(fieldErrors, FieldError{
+			Field:  "ContextKeysDefault",
+			Value:  c.ContextKeysDefault,
+			Reason: "cannot be set without defining ContextKeys",
+		})
+	}
+
+	if len(fieldErrors) > 0 {
+		return &ValidationError{Errors: fieldErrors}
+	}
+
+	return nil
 }

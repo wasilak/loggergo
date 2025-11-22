@@ -30,6 +30,11 @@ func Init(ctx context.Context, config types.Config, additionalAttrs ...any) (con
 	lib.InitConfig()
 	lib.MergeConfig(config)
 
+	// Validate configuration before initialization
+	if err := lib.GetConfig().Validate(); err != nil {
+		return ctx, nil, fmt.Errorf("configuration validation failed: %w", err)
+	}
+
 	logLevel.Set(lib.GetConfig().Level.Level())
 
 	opts := slog.HandlerOptions{
