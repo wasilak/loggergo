@@ -3,14 +3,25 @@ package lib
 import (
 	"log/slog"
 	"os"
+	"sync"
 
 	"github.com/wasilak/loggergo/lib/types"
 )
 
-var libConfig types.Config
+// configManager provides thread-safe access to the global configuration
+type configManager struct {
+	mu     sync.RWMutex
+	config types.Config
+}
+
+// globalConfigManager is the singleton instance for configuration management
+var globalConfigManager = &configManager{}
 
 func InitConfig() {
-	libConfig = types.Config{
+	globalConfigManager.mu.Lock()
+	defer globalConfigManager.mu.Unlock()
+	
+	globalConfigManager.config = types.Config{
 		Level:              slog.LevelInfo,
 		Format:             types.LogFormatJSON,
 		DevMode:            false,
@@ -26,8 +37,18 @@ func InitConfig() {
 	}
 }
 
-func GetConfig() *types.Config {
-	return &libConfig
+// GetConfig returns a copy of the current configuration in a thread-safe manner
+func GetConfig() types.Config {
+	globalConfigManager.mu.RLock()
+	defer globalConfigManager.mu.RUnlock()
+	return globalConfigManager.config
+}
+
+// SetConfig sets the configuration in a thread-safe manner
+func SetConfig(config types.Config) {
+	globalConfigManager.mu.Lock()
+	defer globalConfigManager.mu.Unlock()
+	globalConfigManager.config = config
 }
 
 func MergeConfig(override types.Config) types.Config {
@@ -70,5 +91,8 @@ func MergeConfig(override types.Config) types.Config {
 		libConfig.ContextKeysDefault = override.ContextKeysDefault
 	}
 
-	return *libConfig
+	// Save the merged config back to the global config manager
+	SetConfig(libConfig)
+	
+	return libConfig
 }
