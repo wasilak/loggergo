@@ -562,3 +562,74 @@ func BenchmarkLogger_SingleGoroutine(b *testing.B) {
 		logger.Info("test message", "key", "value", "iteration", i)
 	}
 }
+
+// BenchmarkLogger_LockContention measures lock contention specifically in concurrent logging
+// This benchmark increases parallelism to create more contention on shared resources
+func BenchmarkLogger_LockContention(b *testing.B) {
+	ctx := context.Background()
+	var buf bytes.Buffer
+
+	config := types.Config{
+		Level:        slog.LevelInfo,
+		Format:       types.LogFormatJSON,
+		Output:       types.OutputConsole,
+		OutputStream: &buf,
+		SetAsDefault: false,
+	}
+
+	_, logger, err := Init(ctx, config)
+	if err != nil {
+		b.Fatalf("Failed to initialize logger: %v", err)
+	}
+
+	// Use higher parallelism to increase lock contention
+	b.ResetTimer()
+	b.SetParallelism(200) // Higher parallelism to stress locks
+	b.RunParallel(func(pb *testing.PB) {
+		i := 0
+		for pb.Next() {
+			// Perform logging that will require synchronization
+			logger.Info("contention test message", "goroutine_id", i%100, "iteration", i)
+			i++
+		}
+	})
+}
+
+// BenchmarkLogger_LockContentionWithContext measures lock contention with context extraction
+// This benchmark tests the additional overhead of context value extraction under high contention
+func BenchmarkLogger_LockContentionWithContext(b *testing.B) {
+	var buf bytes.Buffer
+
+	config := types.Config{
+		Level:              slog.LevelInfo,
+		Format:             types.LogFormatJSON,
+		Output:             types.OutputConsole,
+		OutputStream:       &buf,
+		SetAsDefault:       false,
+		ContextKeys:        []interface{}{"request_id", "user_id", "session_id"},
+		ContextKeysDefault: "unknown",
+	}
+
+	// Create context with values
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "request_id", "req-123")
+	ctx = context.WithValue(ctx, "user_id", "user-456")
+	ctx = context.WithValue(ctx, "session_id", "sess-789")
+
+	_, logger, err := Init(ctx, config)
+	if err != nil {
+		b.Fatalf("Failed to initialize logger: %v", err)
+	}
+
+	// Use higher parallelism to increase lock contention
+	b.ResetTimer()
+	b.SetParallelism(150) // High parallelism for context extraction contention
+	b.RunParallel(func(pb *testing.PB) {
+		i := 0
+		for pb.Next() {
+			// Perform logging with context that will require value extraction and synchronization
+			logger.InfoContext(ctx, "context contention test", "iteration", i)
+			i++
+		}
+	})
+}

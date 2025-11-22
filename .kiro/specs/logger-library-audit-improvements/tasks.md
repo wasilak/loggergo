@@ -276,7 +276,7 @@
   - _Requirements: 8.4_
 
 
-- [ ] 14. Add performance benchmarks
+- [x] 14. Add performance benchmarks
 - [x] 14.1 Create benchmark for basic logging
   - Benchmark Info/Debug/Error calls
   - Benchmark with different output modes
@@ -288,7 +288,7 @@
   - Verify filtered logs have minimal overhead
   - _Requirements: 7.2_
 
-- [ ] 14.3 Create benchmark for concurrent logging
+- [x] 14.3 Create benchmark for concurrent logging
   - Benchmark multiple goroutines logging
   - Measure lock contention
   - _Requirements: 7.4_
