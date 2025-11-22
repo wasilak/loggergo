@@ -30,7 +30,11 @@
     },
     "spec-workflow": {
       "command": "npx",
-      "args": ["-y", "@pimzino/spec-workflow-mcp@latest", "/Users/piotrek/git/go/loggergo"],
+      "args": [
+        "-y",
+        "@pimzino/spec-workflow-mcp@latest",
+        "/Users/piotrek/git/go/loggergo"
+      ],
       "timeout": 5000,
       "trust": true
     }
