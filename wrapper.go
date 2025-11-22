@@ -6,6 +6,29 @@ import (
 	"github.com/wasilak/loggergo/lib/types"
 )
 
+// Types provides access to all type constants, enums, and conversion functions.
+//
+// This struct exports all the type-related functionality from the internal types package,
+// making it easy to access log formats, output types, dev flavors, and their conversion functions.
+//
+// Example usage:
+//
+//	// Using constants
+//	config := loggergo.Config{
+//	    Format:    loggergo.Types.LogFormatJSON,
+//	    Output:    loggergo.Types.OutputConsole,
+//	    DevFlavor: loggergo.Types.DevFlavorTint,
+//	}
+//
+//	// Using conversion functions
+//	format := loggergo.Types.LogFormatFromString("json")
+//	output := loggergo.Types.OutputTypeFromString("console")
+//
+//	// Getting all available values
+//	allFormats := loggergo.Types.AllLogFormats()
+//	for _, format := range allFormats {
+//	    fmt.Println(format)
+//	}
 var Types = struct {
 	AllDevFlavors       func() []types.DevFlavor
 	DevFlavorFromString func(string) types.DevFlavor

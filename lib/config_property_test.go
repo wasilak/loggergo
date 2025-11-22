@@ -167,6 +167,158 @@ func TestProperty_ConfigurationRoundTrip(t *testing.T) {
 	properties.TestingRun(t)
 }
 
+// **Feature: logger-library-audit-improvements, Property 2: Configuration merge consistency**
+// For any two Config instances, merging them should follow consistent precedence rules where non-zero values in the override config replace defaults
+// **Validates: Requirements 2.2**
+func TestProperty_ConfigurationMergeConsistency(t *testing.T) {
+	parameters := gopter.DefaultTestParameters()
+	parameters.MinSuccessfulTests = 100
+	properties := gopter.NewProperties(parameters)
+
+	properties.Property("merge follows consistent precedence rules", prop.ForAll(
+		func(base, override types.Config) bool {
+			// Set the base config
+			SetConfig(base)
+			
+			// Merge with override
+			result := MergeConfig(override)
+			
+			// Verify merge precedence rules:
+			// Non-zero values in override should replace base values
+			
+			// Enum fields: non-zero override values should be used
+			if override.Format != (types.LogFormat{}) {
+				if result.Format.String() != override.Format.String() {
+					return false
+				}
+			} else {
+				if result.Format.String() != base.Format.String() {
+					return false
+				}
+			}
+			
+			if override.DevFlavor != (types.DevFlavor{}) {
+				if result.DevFlavor.String() != override.DevFlavor.String() {
+					return false
+				}
+			} else {
+				if result.DevFlavor.String() != base.DevFlavor.String() {
+					return false
+				}
+			}
+			
+			if override.Output != (types.OutputType{}) {
+				if result.Output.String() != override.Output.String() {
+					return false
+				}
+			} else {
+				if result.Output.String() != base.Output.String() {
+					return false
+				}
+			}
+			
+			// Pointer fields: non-nil override values should be used
+			if override.Level != nil {
+				if result.Level == nil || result.Level.Level() != override.Level.Level() {
+					return false
+				}
+			} else {
+				if base.Level != nil {
+					if result.Level == nil || result.Level.Level() != base.Level.Level() {
+						return false
+					}
+				}
+			}
+			
+			// String fields: non-empty override values should be used
+			if override.OtelLoggerName != "" {
+				if result.OtelLoggerName != override.OtelLoggerName {
+					return false
+				}
+			} else {
+				if result.OtelLoggerName != base.OtelLoggerName {
+					return false
+				}
+			}
+			
+			if override.OtelServiceName != "" {
+				if result.OtelServiceName != override.OtelServiceName {
+					return false
+				}
+			} else {
+				if result.OtelServiceName != base.OtelServiceName {
+					return false
+				}
+			}
+			
+			// Boolean fields: override if different from base
+			// This allows false to override true
+			if override.DevMode != base.DevMode {
+				if result.DevMode != override.DevMode {
+					return false
+				}
+			} else {
+				if result.DevMode != base.DevMode {
+					return false
+				}
+			}
+			
+			if override.OtelTracingEnabled != base.OtelTracingEnabled {
+				if result.OtelTracingEnabled != override.OtelTracingEnabled {
+					return false
+				}
+			} else {
+				if result.OtelTracingEnabled != base.OtelTracingEnabled {
+					return false
+				}
+			}
+			
+			if override.SetAsDefault != base.SetAsDefault {
+				if result.SetAsDefault != override.SetAsDefault {
+					return false
+				}
+			} else {
+				if result.SetAsDefault != base.SetAsDefault {
+					return false
+				}
+			}
+			
+			// Slice fields: non-empty override values should be used
+			if len(override.ContextKeys) > 0 {
+				if len(result.ContextKeys) != len(override.ContextKeys) {
+					return false
+				}
+				for i := range override.ContextKeys {
+					if result.ContextKeys[i] != override.ContextKeys[i] {
+						return false
+					}
+				}
+			} else {
+				if len(result.ContextKeys) != len(base.ContextKeys) {
+					return false
+				}
+			}
+			
+			// Interface fields: non-nil override values should be used
+			if override.ContextKeysDefault != nil {
+				if result.ContextKeysDefault != override.ContextKeysDefault {
+					return false
+				}
+			} else {
+				if result.ContextKeysDefault != base.ContextKeysDefault {
+					return false
+				}
+			}
+			
+			return true
+		},
+		genValidConfig(),
+		genValidConfig(),
+	))
+
+	properties.TestingRun(t)
+}
+
 // configsEqual compares two Config instances for equality
 func configsEqual(a, b types.Config) bool {
 	// Compare Level

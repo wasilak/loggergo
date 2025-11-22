@@ -20,5 +20,17 @@ func OtelMode(ctx context.Context) (slog.Handler, context.Context, error) {
 		return nil, ctx, err
 	}
 
+	// Register cleanup for OTEL provider
+	// The provider has a Shutdown method that needs to be called
+	// to flush any pending logs and release resources
+	lib.RegisterCleanup(func() error {
+		// Use a background context for shutdown as the original context may be cancelled
+		shutdownCtx := context.Background()
+		if provider != nil {
+			return provider.Shutdown(shutdownCtx)
+		}
+		return nil
+	})
+
 	return otelslog.NewHandler(lib.GetConfig().OtelLoggerName, otelslog.WithLoggerProvider(provider)), ctx, nil
 }
