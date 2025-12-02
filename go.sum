@@ -274,6 +274,8 @@ github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
 gitlab.com/greyxor/slogor v1.6.2 h1:rTiUPgyeV488Wb9iq2Gw38hth0e6qfCjFDxkuZK09Fw=
 gitlab.com/greyxor/slogor v1.6.2/go.mod h1:q1VWPH4KB0x9eH8PoJ+zM5yfHeSG4YNS3uVfs+P+ZL8=
+gitlab.com/greyxor/slogor v1.6.3 h1:LLuiXWieXQt0UDArSG0O69nGxB8zKdMxGU/axdU8eaQ=
+gitlab.com/greyxor/slogor v1.6.3/go.mod h1:cDbtlJaGicAiW+EqFIWjiWuZ8IGdBX46crp815PVpuY=
 go.etcd.io/etcd/api/v3 v3.5.0/go.mod h1:cbVKeC6lCfl7j/8jBhAK6aIYO9XOjdptoxU/nLQcPvs=
 go.etcd.io/etcd/client/pkg/v3 v3.5.0/go.mod h1:IJHfcCEKxYu1Os13ZdwCwIUTUVGYTSAM3YSwc9/Ac1g=
 go.etcd.io/etcd/client/v2 v2.305.0/go.mod h1:h9puh54ZTgAKtEbut2oe9P4L/oqKCVB6xsXlzd7alYQ=
