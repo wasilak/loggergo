@@ -21,6 +21,12 @@ type levelFilterProcessor struct {
 	processor log.Processor
 }
 
+// Enabled checks if the log record should be processed based on the minimum level
+func (p *levelFilterProcessor) Enabled(ctx context.Context, record log.EnabledParameters) bool {
+	sev := slog.Level(record.Severity) - sevOffset
+	return sev >= p.minLevel
+}
+
 // OnEmit filters log records by level and delegates to the wrapped processor
 func (p *levelFilterProcessor) OnEmit(ctx context.Context, record *log.Record) error {
 	sev := slog.Level(record.Severity()) - sevOffset
