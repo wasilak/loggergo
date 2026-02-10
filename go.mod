@@ -11,10 +11,10 @@ require (
 	github.com/wasilak/otelgo v1.3.0
 	github.com/xybor-x/enum v1.4.0
 	gitlab.com/greyxor/slogor v1.6.7
-	go.opentelemetry.io/contrib/bridges/otelslog v0.14.0
-	go.opentelemetry.io/otel v1.39.0
+	go.opentelemetry.io/contrib/bridges/otelslog v0.15.0
+	go.opentelemetry.io/otel v1.40.0
 	go.opentelemetry.io/otel/exporters/stdout/stdoutlog v0.15.0
-	go.opentelemetry.io/otel/log v0.15.0
+	go.opentelemetry.io/otel/log v0.16.0
 	go.opentelemetry.io/otel/sdk v1.39.0
 	go.opentelemetry.io/otel/sdk/log v0.15.0
 )
@@ -31,8 +31,8 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.15.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.15.0 // indirect
-	go.opentelemetry.io/otel/metric v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
+	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
