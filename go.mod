@@ -3,7 +3,7 @@ module github.com/wasilak/loggergo
 go 1.25.4
 
 require (
-	github.com/golang-cz/devslog v0.0.15
+	github.com/golang-cz/devslog v0.0.17
 	github.com/leanovate/gopter v0.2.11
 	github.com/lmittmann/tint v1.2.0
 	github.com/mattn/go-isatty v0.0.22
